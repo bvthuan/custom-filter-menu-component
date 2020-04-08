@@ -1,0 +1,298 @@
+.front-end-app .filter-tag {
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;  
+  color: #fff;
+  background-color: #6c757d;
+}
+.front-end-app .filter-tag .filter-value {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 150px;
+  font-weight: bold;
+}
+
+
+
+.elevation-filters-component.closed {
+ -moz-transform: translateX(96%);
+ -webkit-transform: translateX(96%);
+ -o-transform: translateX(96%);
+ -ms-transform: translateX(96%); 
+ transform: translateX(96%);
+}
+.elevation-filters-component.closed .filters-header,
+.elevation-filters-component.closed .filters .filters-body,
+.elevation-filters-component.closed .criterio select {
+  background: #453514;
+} 
+
+.elevation-filters-component .filters-header,
+.elevation-filters-component .filters .filters-body,
+.elevation-filters-component .criterio select {
+  background: #12678a;
+}  
+
+.elevation-filters-component {
+  position: absolute;
+  right: 0px;
+  top: 115px;
+  top: 15%;
+  max-width: 486px;
+ -moz-transform: translateX(0%);
+ -webkit-transform: translateX(0%);
+ -o-transform: translateX(0%);
+ -ms-transform: translateX(0%); 
+ transform: translateX(0%);  
+  /*
+  -webkit-transition: width 2s, max-width 2s, min-width 2s,  height 2s, max-height 2s,  min-height 2s, right 1s, left 1s, transform 0.8s;    
+  transition: width 2s, max-width 2s, min-width 2s,  height 2s, max-height 2s,  min-height 2s, right 1s, left 1s, transform 0.8s;  
+  */
+  -webkit-transition: transform 0.8s;    
+  transition: transform 0.8s;  width: 486px; 
+}
+.filters.open {
+  right: 200px;
+}
+.filters {
+  font-family: 'Raleway', sans-serif; 
+  position: relative;
+  //responsive min-width: 400px;
+  //responsive min-width: 450px;
+}
+.filters .filters-header {
+  padding: 10px;
+  padding: 8px;
+  border-top-left-radius: 35px;
+  border-bottom-left-radius: 35px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: white;
+  cursor: pointer;
+  //responsive max-width: 40px; 
+}
+.filters .filters-header.only-one-or-two-filters {
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  margin-top: 2px;
+  margin-bottom: 2px;  
+}
+
+
+.filters .filters-header .rotated-badge {
+  border-top-left-radius: 35px;
+  border-top-right-radius: 35px;
+  font-size: 1.2em;
+  transform: rotate(-90deg) translate(-70px,50%);
+  white-space: nowrap;
+  transform: rotate(-90deg) translate(0%,-100%);
+  font-size: 0.9em;
+  font-weight: bold;
+  letter-spacing: 1px;  
+} 
+.filters .filters-body {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  box-shadow: 0px 0px 10px black;
+  color: white;  
+}
+.filters .filters-body .body-header {
+  font-size: 1.3em;
+  padding-bottom: 5px;
+  font-weight: bold;
+  letter-spacing: 1.7px;  
+}
+.filters .criterio {    
+  padding-top: 2px;
+  padding-bottom: 2px; 
+}  
+.filters .criterio .filter-label {
+  min-width: 25%;
+  font-weight: normal;
+  font-size: 0.9em;
+  letter-spacing: 0.05em;
+  
+}
+.filters .criterio select {
+  width: 75%;
+  border-width: 0px;
+  border-bottom-width: 2px;
+  border-color: white;
+  color: white; 
+  cursor: pointer;
+  position: relative;
+  top: -3px;
+  font-size: 0.9em;
+  letter-spacing: 0.05em;
+}
+.filters .criterio select option {
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  font-weight: inherit;
+}
+.filters .filters-body .body-footer {
+  padding-top: 5px;
+  padding-bottom: 5px; 
+  font-weight: 700;
+  font-size: 0.9em;
+  letter-spacing: 0.02em;  
+}
+
+.filters .custom-select {
+    display: inline-block;
+    width: 100%;
+    height: calc(2.25rem + 2px);
+    padding: .375rem 1.75rem .375rem .75rem;
+    line-height: 1.5;
+    color: #495057;
+    vertical-align: middle;   
+    background-size: 8px 10px;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    __background:#fff url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M0 0 L4 0 L2 4Z'/%3E%3C/svg%3E") no-repeat right .75rem center;
+    background-position-y: 0.3rem;	
+    background-position-y: 0.5rem;
+    background-position-x: 99%;	
+    background-size: 20px 20px;	
+	
+	background:#fff url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'%3E%3Cpath fill='%23ffffff' d='M0 0 L6 0 L3 5Z'/%3E%3C/svg%3E") no-repeat right .75rem center;	
+    background-position-y: 0.3rem;	
+	background-position-y: 50%;
+    background-position-x: 98%;
+    background-size: 12px 12px;	
+	
+	padding-left: 0px;
+	padding-top: 0px;
+    padding-bottom: 0px;
+	height: auto;
+    cursor: pointer;
+    border-radius: 0px;
+}
+
+.filters .criterio, 
+.filters .criterio-multiple {
+  opacity: 1;
+}
+.filters .criterio-multiple.amenities.pretty path, 
+.filters .criterio-multiple.availability.pretty path {
+  opacity: 0.5;	
+}
+.filters .criterio.active-filter,
+.filters .criterio-multiple.active-filter,
+.filters .criterio-multiple.active-filter.amenities.pretty path, 
+.filters .criterio-multiple.active-filter.availability.pretty path  {
+  opacity: 1;	
+}
+
+.elevation-filters-component .filters .criterio select {
+    background: transparent;
+}
+.filters .criterio.active-filter select,
+.filters .criterio-multiple.active-filter select{
+  background-color: white;
+  color: black;
+  background: white;
+}
+
+.filters .criterio.active-filter,
+.filters .criterio.active-filter .filter-label,
+.filters .criterio.active-filter select,
+.filters .criterio.active-filter label, 
+.filters .criterio-multiple.active-filter label {
+  font-weight: bold;
+}
+
+
+.filters .criterio.price input { 
+  width: 20%;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+.filters .criterio.appartment-name input,
+.filters .criterio.price input ,
+.filters .criterio.price .price-limit-label {
+  font-size: 0.9em;
+  font-weight: inherit;  
+}
+
+
+    
+.filters .amenities-col, 
+.filters .availability-col {
+  padding-left: 0px;
+  padding-right: 0px;
+  _width: 30%;
+}
+.filters .amenities.pretty path,
+.filters .availability.pretty path {
+  stroke: #b1ff45;
+  fill: #89ff71;
+}
+
+.filters .amenities.pretty .state label {
+  width: 100px;
+  min-width: calc(1em + 110px);
+}   
+.filters .amenities.pretty.p-svg .state .svg {
+  width: 30px;
+  height: 30px;
+  color: red;
+  fill: red;
+  top: -11px;
+  left: -3px;
+  right: -12px;
+  left: auto; 
+  
+  width: 1.875rem;
+  height: 1.875rem;
+  right: -0.75rem;
+  top: -0.6875rem;  
+}
+.filters .amenities.pretty .state label::after, 
+.filters .pretty .state label::before {
+  right: 0;
+  left: auto;
+  top: -2px;
+}
+
+.filters .availability.pretty .state label {
+  width: 210px;
+  min-width: calc(1em + 210px);
+}   
+.filters .availability.pretty.p-svg .state .svg {
+  width: 30px;
+  height: 30px;
+  color: red;
+  fill: red;
+  top: -10px;
+  left: -3px;
+  right: -10px;
+  left: auto; 
+}
+.filters .availability.pretty .state label::after, .pretty .state label::before {
+  right: 0;
+  left: auto;
+  top: -2px;
+}
+
+.filters .amenities.pretty input:checked~.state.p-success label:after, 
+.filters .amenities.pretty.p-toggle .state.p-success label:after,
+.filters .availability.pretty input:checked~.state.p-success label:after, 
+.filters .availability.pretty.p-toggle .state.p-success label:after {
+    background-color: rgba(0,0,0,0)!important;
+}
