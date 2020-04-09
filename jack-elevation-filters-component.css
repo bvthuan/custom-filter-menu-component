@@ -296,3 +296,53 @@
 .filters .availability.pretty.p-toggle .state.p-success label:after {
     background-color: rgba(0,0,0,0)!important;
 }
+
+
+ .vue-slider-mark-label {
+   font-size: 0.7rem !important;
+ }
+
+ .vue-slider-dot-tooltip-text {
+   font-size: 0.8rem !important;
+   font-weight: bold;
+   color: transparent ;
+ }
+
+ .vue-slider-dot-tooltip-inner {
+  
+  white-space: nowrap;
+  border: none !important;
+  background: none !important;
+}
+
+.vue-slider-dot-tooltip-top{
+  top: 0px !important;
+}
+
+
+.scroll-box-content{
+  visibility: visible; 
+  overflow-x: auto;
+  overflow-y: hidden;
+  -ms-overflow-style: none;
+}
+
+.scroll-box-content::-webkit-scrollbar {
+  display: none;
+}
+
+
+.filter-separator {
+  border-bottom: 1px solid gray;
+  width: 90%;
+}
+
+
+.filter-types .custom-control-input:disabled~.custom-control-label{
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.filter-price-section .vue-slider-marks:first-child .vue-slider-mark-label{
+  padding-left: 5em;
+}
