@@ -779,16 +779,10 @@
 			background-color: #ffffff;
 		}
 
-		.filter-menu-component ::-webkit-scrollbar {
-			/* width: 0px;  
-			background: transparent;   */
-		}
-
 		.overflow-x-scroll{
 			overflow-x: auto;
 			overflow-y: hidden;
 		}
-
 
 		.filter-menu-component {
 			height: 100%;
@@ -835,11 +829,6 @@
 			padding-right: 30px;
 			/*font-size: 11px;*/
 			font-size: 0.8em;
-		}
-
-
-		.filter {
-			/* border-bottom: 1px solid gray; */
 		}
 
 		.filter-section-body {
@@ -966,16 +955,7 @@
 			height: 50px
 		}
 
-		.filter-section-actions .actions button{
-			/* text-align: right;
-			padding: 15px;
-			padding-bottom: 0px;
-		
-			font-size: 1.4em !important; */
-		}
-
 		.filter-section-actions .actions span {
-			/* padding-right: 15px;*/
 			cursor: pointer; 
 		}
 
