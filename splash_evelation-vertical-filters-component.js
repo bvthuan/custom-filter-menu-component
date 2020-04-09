@@ -712,507 +712,627 @@ Vue.component("filter-elevation-header", {
   `
 })
 
-Vue.component("filter-menu-component", {
-	props: ["filters", "filterklass", "lastsearch", "areatype", "datamodel"],
 
-	/*
-      filter: {
-		propName: '',
-		visible: tru/false,
-	    filterActive: true,
-		filterValue: 'ds',
-		defaultValue: 'ds'
-      	filterSettings: {
-		  options: [{name: '', value: '', checked: true }],
-		  results: []
-		},
-		dropdown: {
-		  isOpen: false,
-          animation: true		  
-		}
-	  }
-  */
 
-	data: function() {
+Vue.component('filter-menu-component', {
+	props: ['filters', 'filterklass', 'lastsearch', 'areatype', 'datamodel'],
+
+    /*
+        filter: {
+          propName: '',
+          visible: tru/false,
+          filterActive: true,
+          filterValue: 'ds',
+          defaultValue: 'ds'
+            filterSettings: {
+            options: [{name: '', value: '', checked: true }],
+            results: []
+          },
+          dropdown: {
+            isOpen: false,
+            animation: true
+          }
+        }
+    */
+
+
+	data: function () {
 		return {
 			amenityName: "Amenities",
 			agentName: "Agent",
-			finishName: "Finishes"
+			finishName: "Finishes",
+			areaTypes: [],
+			activatedFilters: [],
+			isCommercialVisible: false,
+			isAmmenitiesVisible: false,
+			squareSlider: [0, 0],
+			priceSlider: [0, 0],
+
+
+			priceRange: {
+				min: 0,
+				max: 0
+			},
+
+			squareRange: {
+				min: 0,
+				max: 0
+			},
+
+			dotOptions: [{
+				tooltip: 'always'
+			}, {
+				tooltip: 'always'
+			}],
+			squareFormatter: function (value) {
+				return `${('' + value).replace(/\B(?=(\d{3})+(?!\d))/g, ',')} sqft`
+			},
+			priceFormatter: function (value) {
+				return `$ ${('' + value).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
+			},
+			squareMarker: {
+			},
+			priceMarker: {
+			},
+			startX: 0,
+			scrollLeft: 0,
+			isMouseDown: false
 		}
 	},
+	components: {
+		VueSlider: window['vue-slider-component']
+	},
+	watch: {
+		filters: {
 
-	beforeCreate() {
-		if (!window.VUE_RADIO_uuiidd) {
-			window.VUE_RADIO_uuiidd = 0
+			handler: function (filteredData) {
+				let THAT = this;
+
+				if (!filteredData) return;
+
+				console.log('THAT', THAT);
+
+				THAT.initializeSliders(filteredData);
+
+				THAT.isCommercialVisible = THAT.filterklass.isFilterWithAreaTypeVisible('commercial', THAT.activatedFilters);
+				THAT.isAmmenitiesVisible = THAT.filterklass.isFilterWithAreaTypeVisible('common', THAT.activatedFilters);
+			},
+			deep: false,
+			immediate: true
 		}
-		this.uuiidd = window.VUE_RADIO_uuiidd
-		window.VUE_RADIO_uuiidd++
+	},
+	beforeCreate() {
+
+		if (!window.VUE_RADIO_uuiidd) {
+			window.VUE_RADIO_uuiidd = 0;
+		}
+		this.uuiidd = window.VUE_RADIO_uuiidd;
+		window.VUE_RADIO_uuiidd++;
+
 	},
 	mounted() {
-		console.log(" loaded model data : ", this.datamodel)
+		console.log(
+			" loaded model data : ", this.datamodel
+		);
 
 		if (this.datamodel.filterArray) {
 			this.datamodel.filterArray.map(item => {
 				switch (item.matchProperty) {
 					case "finish":
-						this.finishName = item.name
-						break
+						this.finishName = item.name;
+						break;
 					case "agent":
-						this.agentName = item.name
-						break
+						this.agentName = item.name;
+						break;
 					case "amenity":
-						this.amenityName = item.name
-						break
+						this.amenityName = item.name;
+						break;
 					default:
-						break
+						break;
 				}
-			})
+				console.log('item', item.name + '' + item.matchFilterProp);
+				if (item.active) {
+					this.activatedFilters.push(item.matchFilterProp);
+				}
+
+			});
 		}
 
+
+
 		if (!this.areaType) {
-			this.areaType = "appartment"
+			this.areaType = ['appartment'];
 		}
+
+		console.log("current filter", this.filters);
+		console.log('');
+		console.log('this.activatedFilters', this.activatedFilters);
+
+
+
 	},
 	beforeUpdate() {
-		this.areaType = this.filters.areaType.filterValue
+		if (this.filters.areaType && this.filters.areaType.filterValue) {
+			this.areaType = this.filters.areaType.filterValue;
+		}
+
 	},
 	updated() {
-		this.calculateHeights()
-		if (
-			$(this.$el)
-				.parent()
-				.hasClass("filter-menu-closed")
-		) {
-			this.filterklass.updateFiltersMenuPosition()
+		this.calculateHeights();
+		if ($(this.$el).parent().hasClass('filter-menu-closed')) {
+			this.filterklass.updateFiltersMenuPosition();
 		}
 	},
 	methods: {
 		isValidLayout(layoutValue) {
-			let flag = false
-			if (!layoutValue) flag = true
+			let flag = false;
+			if (!layoutValue) flag = true;
 			else {
 				this.datamodel.adminOptions.layout.map(item => {
-					if (item.name == layoutValue) flag = true
-				})
+					if (item.name == layoutValue)
+						flag = true;
+				});
 			}
-			return flag
+			return flag;
+
 		},
 		getUniqueVue() {
-			return this.uuiidd
+			return this.uuiidd;
 		},
 		applyAllFilters() {
-			this.filterklass.applyAllFilters(this.areaType)
+
+			if (this.filters.price) {
+				
+				if (this.priceSlider[0] === this.filters.price.filterSettings.minValue && this.priceSlider[1] === this.filters.price.filterSettings.maxValue) {
+					this.filters.price.rangeValue.min = undefined;
+					this.filters.price.rangeValue.max = undefined;
+				} else {
+					this.filters.price.rangeValue.min = this.priceSlider[0];
+					this.filters.price.rangeValue.max = this.priceSlider[1];
+				}
+			}
+
+			if (this.filters.sqrFoot) {
+
+				if (this.squareSlider[0] === this.filters.sqrFoot.filterSettings.minValue && this.squareSlider[1] === this.filters.sqrFoot.filterSettings.maxValue) {
+					this.filters.sqrFoot.rangeValue.min = undefined;
+					this.filters.sqrFoot.rangeValue.max = undefined;
+				} else {
+					this.filters.sqrFoot.rangeValue.min = this.squareSlider[0];
+					this.filters.sqrFoot.rangeValue.max = this.squareSlider[1];
+				}
+
+			}
+
+
+			this.filterklass.applyAllFilters(this.areaType);
 		},
 		clearAllFilters() {
-			this.filterklass.clearAllFilters()
+
+			$('.scroll-box').scrollLeft(0);
+
+			//price
+			if (this.filters.price) {
+				this.priceSlider = [
+					this.filters.price.filterSettings.minValue,
+					this.filters.price.filterSettings.maxValue
+				];
+			}
+
+			// square
+			if (this.filters.sqrFoot) {
+				this.squareSlider = [
+					this.filters.sqrFoot.filterSettings.minValue,
+					this.filters.sqrFoot.filterSettings.maxValue
+				];
+
+			}
+
+			this.filterklass.clearAllFilters();
+
+			this.filterklass.selectFilterOption('areaType', this.areaType);
+
 		},
 
 		/* dropdowns */
 		toggleFilterDropdown(filterProp) {
-			this.filterklass.toggleFilterDropdown(filterProp)
+			this.filterklass.toggleFilterDropdown(filterProp);
 			//this.filters[filterProp].dropdown.isOpen = !this.filters[filterProp].dropdown.isOpen;
 		},
 		openFilterDropdown(filterProp) {
-			this.filterklass.openFilterDropdown(filterProp)
+			this.filterklass.openFilterDropdown(filterProp);
 			//this.filters[filterProp].dropdown.isOpen = true;
 		},
 		closeFilterDropdown(filterProp) {
-			this.filterklass.closeFilterDropdown(filterProp)
+			this.filterklass.closeFilterDropdown(filterProp);
 			//this.filters[filterProp].dropdown.isOpen = false;
 		},
 		isFilterDropdownOpen(filterProp) {
-			return this.filterklass.isFilterDropdownOpen(filterProp)
-			/*
-	  if (this.filters[filterProp].dropdown.isOpen) {
-		return true;
-	  }
-	  return false;
-	  */
+			return this.filterklass.isFilterDropdownOpen(filterProp);
+            /*
+            if (this.filters[filterProp].dropdown.isOpen) {
+              return true;
+            }
+            return false;
+            */
 		},
 		calcFilterDropdownHeight(propName) {
-			let bd = $(this.$el)
-				.find(".filter-" + propName + "-section .filter-body")
-				.eq(0)
+			let bd = $(this.$el).find('.filter-' + propName + '-section .filter-body').eq(0);
 			// if (bd.attr('calced_height')) {
 			// return parseInt(bd.attr('calced_height'),10);
 			// }
-			let cloneBodyOptions = bd.clone()
-			cloneBodyOptions.css({ height: "auto", visibility: "visible", display: "inline-block", width: "600px" })
+			let cloneBodyOptions = bd.clone();
+			cloneBodyOptions.css({ 'height': 'auto', 'visibility': 'visible', 'display': 'inline-block', 'width': '600px' });
 			//$('.container-fluid').append(cloneBodyOptions);
-			bd.parent().append(cloneBodyOptions)
-			let calcedHeight = cloneBodyOptions.height()
-			cloneBodyOptions.remove()
+			bd.parent().append(cloneBodyOptions);
+			let calcedHeight = cloneBodyOptions.height();
+			cloneBodyOptions.remove();
 			// bd.attr('calced_height', calcedHeight);
-			return calcedHeight
+			return calcedHeight;
 		},
 		calculateHeights() {
 			for (let propName in this.filters) {
 				if (this.isFilterDropdownOpen(propName)) {
-					let h = this.calcFilterDropdownHeight(propName)
-					if (propName === "price") {
+					let h = this.calcFilterDropdownHeight(propName);
+					if (propName === 'price') {
 						// h = 95;
 					}
-					$(this.$el)
-						.find(".filter-" + propName + "-section")
-						.find(".filter-body.has-height-transition")
-						.css("height", "inherit")
+					$(this.$el).find('.filter-' + propName + '-section').find('.filter-body.has-height-transition').css('height', 'inherit');
 				} else {
-					$(this.$el)
-						.find(".filter-" + propName + "-section")
-						.find(".filter-body.has-height-transition")
-						.css("height", "0px")
+					// $(this.$el).find('.filter-' + propName +'-section').find('.filter-body.has-height-transition').css('height', '0px');
 				}
 			}
 		},
 		/* filter options */
 		parseFilterOptions(filterProp, callback) {
-			this.filterklass.parseFilterOptions(filterProp, callback)
+			this.filterklass.parseFilterOptions(filterProp, callback);
 		},
 		clearFilterOptions(filterProp) {
-			this.filterklass.clearFilterOptions(filterProp)
+			this.filterklass.clearFilterOptions(filterProp);
 		},
 		selectFilterOption(filterProp, val) {
-			this.filterklass.selectFilterOption(filterProp, val)
+			this.filterklass.selectFilterOption(filterProp, val);
 		},
 		isFilterOptionChecked(filterProp, val) {
-			return this.filterklass.isFilterOptionChecked(filterProp, val)
+			return this.filterklass.isFilterOptionChecked(filterProp, val);
 		},
 		noFilterOptionChoosed(filterProp) {
-			return this.filterklass.noFilterOptionChoosed(filterProp)
+			return this.filterklass.noFilterOptionChoosed(filterProp);
 		},
-		switchFilters(areaTypeValue) {
-			//this.$forceUpdate();
-			this.selectFilterOption("areaType", areaTypeValue)
-			this.areaType = areaTypeValue
-			this.$forceUpdate()
+		switchFilters(event) {
+			var areaType = event.target.value;
+
+			$('.filter-types .custom-control-input').prop('checked', false);
+			$('.filter-types .custom-control-input').prop('disabled', false)
+
+			$(".filter-types input[value='" + areaType + "'").prop('checked', true);
+			$(".filter-types input[value='" + areaType + "'").prop('disabled', true);
+
+			this.filterklass.switchFilterSettings(areaType);
+
+			this.initializeSliders(this.filters);
+
+			this.areaType = areaType;
+
+			this.selectFilterOption('areaType', this.areaType);
+
+			this.$forceUpdate();
+
+		},
+		initializeSliders(filteredData) {
+
+			//price
+			if (filteredData.price) {
+				this.priceSlider = [
+					filteredData.price.filterSettings.minValue,
+					filteredData.price.filterSettings.maxValue
+				];
+
+				this.priceRange = {
+					min: filteredData.price.filterSettings.minValue,
+					max: filteredData.price.filterSettings.maxValue
+				};
+
+
+				this.priceMarker = {};
+				this.priceMarker['' + filteredData.price.filterSettings.minValue] = 'Starting from $' + ('' + filteredData.price.filterSettings.minValue).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+				this.priceMarker['' + filteredData.price.filterSettings.maxValue] = '$' + ('' + filteredData.price.filterSettings.maxValue).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+
+			}
+
+			// square
+			if (filteredData.sqrFoot) {
+				this.squareSlider = [
+					filteredData.sqrFoot.filterSettings.minValue,
+					filteredData.sqrFoot.filterSettings.maxValue
+				];
+
+				this.squareRange = {
+					min: filteredData.sqrFoot.filterSettings.minValue,
+					max: filteredData.sqrFoot.filterSettings.maxValue
+				};
+
+				this.squareMarker = {};
+				this.squareMarker['' + filteredData.sqrFoot.filterSettings.minValue] = 'Min ' + ('' + filteredData.sqrFoot.filterSettings.minValue).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+				this.squareMarker['' + filteredData.sqrFoot.filterSettings.maxValue] = 'Max ' + ('' + filteredData.sqrFoot.filterSettings.maxValue).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+			}
+
 		},
 		onlyNumbersHere(val) {
-			val = val.replace(/[^0-9]+/g, "")
-			return val
+			val = val.replace(/[^0-9]+/g, "");
+			return val;
+		},
+
+		/**
+		 * Mouse event
+		 */
+		startScrolling(event) {
+			this.isMouseDown = true;
+			var container = event.target.parentElement;
+			this.startX = event.pageX - container.offsetLeft;
+			this.scrollLeft = container.scrollLeft;
+		},
+		scrolling(event) {
+			if (!this.isMouseDown) return;
+			event.preventDefault();
+
+			var container = event.target.parentElement
+			const x = event.pageX - container.offsetLeft;
+			const distance = (x - this.startX) * 3;
+			container.scrollLeft = this.scrollLeft - distance;
+		},
+		cancelScrollingOnMouseLeave(event) {
+			this.isMouseDown = false;
+		},
+		cancelScrollingOnMouseUp(event) {
+			this.isMouseDown = false;
+		},
+		areaTypeSelected(areaType) {
+			return false || this.areaType.includes(areaType);
+		},
+		filterActivated(prop) {
+			return this.activatedFilters.includes(prop);
 		}
+
 	},
-	template: `
-			<div class="filter-section" v-if="filters">
-			  <div class="filter-section-header">
-			    <div class="row d-flex align-items-center h-100">
-			      <div class="col-5 header-title">FILTERS</div>
-				  <div class="col-7 header-results-num">{{(lastsearch.numResults===0?'No':lastsearch.numResults)}} matching properties</div>
+	template:/*html*/
+		`<div class="filter-section" v-if="filters">
+	<div class="filter-section-header">
+		<div class="row d-flex align-items-center h-100">
+			<div class="col-5 header-title">FILTERS</div>
+			<div class="col-7 header-results-num">{{(lastsearch.numResults===0?'No':lastsearch.numResults)}} matching
+				properties</div>
+		</div>
+	</div>
+
+	<div class="filter-section-body p-3">
+
+		<div class="filter-types p-3" style="display: inline-flex;">
+			<div class="form-check-inline" style="margin-left: .75rem; margin-right: 1rem;">
+				<div class="custom-control custom-checkbox ">
+					<input type="checkbox" class="custom-control-input" v-bind:name="getUniqueVue() + '_areatype'"
+						value="appartment" id="checkBoxAppartment" disabled="disabled" checked="checked"
+						v-on:click="switchFilters">
+					<label class="custom-control-label" for="checkBoxAppartment">RESIDENTIALS</label>
 				</div>
-			  </div>
-			  <div class="filter-section-body">
-				<div class="filter-types" style="display: inline-flex;">
-                  <div class="form-check-inline" style="margin-left: .75rem;margin-right: 0rem;">
-                    <label class="d-flex align-items-center form-check-label">
-                      <span>RESIDENTIALS</span><input type="radio" class="form-check-input" v-bind:name="getUniqueVue() + '_areatype'"   value="appartment" v-model="areaType" v-on:change="switchFilters('appartment')">
-                    </label>
-                  </div>
-                  <div class="form-check-inline" style="margin-right: 0rem;">
-                    <label class="d-flex align-items-center form-check-label">
-                      <span>COMMERCIAL</span><input type="radio" class="form-check-input" v-bind:name="getUniqueVue() + '_areatype'"    value="commercial" v-model="areaType" v-on:change="switchFilters('commercial')">
-                    </label>
-                  </div>
-                  <div class="form-check-inline"  style="margin-right: 0rem;">
-                    <label class="d-flex align-items-center form-check-label">
-                      <span>AMENITIES</span><input type="radio" class="form-check-input" v-bind:name="getUniqueVue() + '_areatype'"     value="common" v-model="areaType" v-on:change="switchFilters('common')">
-                    </label>
-                  </div> 			
-				</div>
-				<!--<div class="filters" v-if="areaType==='commercial'"  style="position:absolute;top:50%;transform: translate(0%,-50%);width:100%;text-align:center;font-size:1.7rem;color:#dadada;"><span style="display:inline-block;width:80%; display: none;">Click 'Apply' to find commercials</span></div>-->
-				<!--<div class="filters" v-if="areaType==='common'"  	 style="position:absolute;top:50%;transform: translate(0%,-50%);width:100%;text-align:center;font-size:1.7rem;color:#dadada;"><span style="display:inline-block;width:80%; display: none;">Click 'Apply' to find amenities</span></div>-->
-				<div class="filters" v-if="areaType==='appartment' || areaType==='commercial' || areaType==='common'" v-bind:class="{'centerized-child':!filterklass.appartmentHasFilters() }">
-				  <span v-if="!filterklass.appartmentHasFilters()" style="display:inline-block;width:80%; display: none;">Click 'Apply' to find residentials</span>
-				  <div class="filter filter-sqrFoot-section"  v-if="filters.sqrFoot"  v-bind:class="{'dropdown-open': isFilterDropdownOpen('sqrFoot') }">
-				    <div 
-					  class="filter-header"  
-					  v-on:click="toggleFilterDropdown('sqrFoot')"
-					>
-				      <div class="filter-label">Square Feet</div>		
-					  <div class="filter-toggler"><i class="fas fa-caret-down"></i></div>	
-					</div>
-					<div 
-					  class="filter-body  has-height-transition"
-					   ___v-bind:style="{height:(isFilterDropdownOpen('sqrFoot')?calcFilterDropdownHeight('sqrFoot')+'px':'0px')}"
-					>
-					  <div class="filter-option" v-on:click="(function(){filters.sqrFoot.rangeValue.min=null;filters.sqrFoot.rangeValue.max=null;}())">
-					    <div class="filter-option-label">
-						  <div class="row d-flex align-items-center" style="_width: 100%;">
-						    <span class="col-4"></span><span class="col-8 text-left">Any</span>
-						  </div>
-						</div><div class="filter-option-check"><i class="fas fa-check"  v-bind:class="{'d-none': (filters.sqrFoot.rangeValue.min||filters.sqrFoot.rangeValue.max) }"></i></div>
-					  </div>
-					  <div class="filter-option">
-					    <div class="filter-option-label"  style="width:100%;">
-						  <div class="row d-flex align-items-center" style="_width: 100%;margin:0px;">
-						    <span class="col-3"></span>
-							<div class="col-9  text-left">
-							  <input  class="col-9 field-sqrFoot-input"   v-on:change="$event.target.value=onlyNumbersHere($event.target.value);filters.sqrFoot.rangeValue.min=$event.target.value"  placeholder="Minimum Sqft" />							  
-							</div>
-						  </div>
-						</div>
-						<div class="filter-option-check"><i class="fas fa-check d-none"></i></div>					  
-					  </div>
-					  <div class="filter-option">
-					    <div class="filter-option-label" style="width:100%;">
-						  <div class="row d-flex align-items-center" style="_width: 100%;margin:0px;">
-						    <span class="col-3"></span>
-							
-							<div class="col-9  text-left">							
-							  <input  class="col-9 field-sqrFoot-input"  v-on:change="$event.target.value=onlyNumbersHere($event.target.value);filters.sqrFoot.rangeValue.max=$event.target.value"  placeholder="Maximum Sqft" />							  
-							</div>
-								
-						  </div>
-						</div>
-						<div class="filter-option-check"><i class="fas fa-check d-none"></i></div>					  
-					  </div>					  
-					</div>					
-				  </div>
-				  <div class="filter filter-occupancy-section"  v-if="filters.occupancy"  v-bind:class="{'dropdown-open': isFilterDropdownOpen('occupancy') }">
-				    <div 
-					  class="filter-header"  
-					  v-on:click="toggleFilterDropdown('occupancy')"
-					>
-				      <div class="filter-label">Occupancy</div>		
-					  <div class="filter-toggler"><i class="fas fa-caret-down"></i></div>	
-					</div>
-					<div 
-					  class="filter-body  has-height-transition"
-					   ___v-bind:style="{height:(isFilterDropdownOpen('occupancy')?calcFilterDropdownHeight('occupancy')+'px':'0px')}"
-					>
-					  <div class="filter-option" v-on:click="(function(){filters.occupancy.filterValue=null;}())">
-					    <div class="filter-option-label">
-						  <div class="row d-flex align-items-center" style="_width: 100%;">
-						    <span class="col-4"></span><span class="col-8 text-left">Any</span>
-						  </div>
-						</div><div class="filter-option-check"><i class="fas fa-check"  v-bind:class="{'d-none': (filters.occupancy.filterValue) }"></i></div>
-					  </div>
-					  <div class="filter-option">
-					    <div class="filter-option-label"  style="width:100%;">
-						  <div class="row d-flex align-items-center" style="_width: 100%;margin:0px;">
-						    <span class="col-3"></span>
-							<div class="col-9  text-left">							
-							  <input  class="col-9 field-occupancy-input"   v-on:change="$event.target.value=onlyNumbersHere($event.target.value);filters.occupancy.filterValue=$event.target.value"  placeholder="People To Fit" />							  
-							</div>
-						  </div>
-						</div>
-						<div class="filter-option-check"><i class="fas fa-check d-none"></i></div>					  
-					  </div>					  
-					</div>					
-				  </div>		
-				  <div class="filter filter-layouts-section"   v-if="filters.layouts"  v-bind:class="{'dropdown-open': isFilterDropdownOpen('layouts') }">
-				    <div
- 					  class="filter-header" 
-					  v-on:click="toggleFilterDropdown('layouts')"
-					>
-				      <div class="filter-label">Layout</div>		
-					  <div class="filter-toggler"><i class="fas fa-caret-down"></i></div>	
-					</div>
-					<div 
-					  class="filter-body has-height-transition" 
-					  ___v-bind:style="{height:(isFilterDropdownOpen('layouts')?'inherit':'0px')}"
-					 >
-					  <div 
-					    class="filter-option" 
-						v-for="(layoutOption, index) in filters.layouts.filterSettings.options"
-						v-on:click="selectFilterOption('layouts', layoutOption.value);"
-						v-if="isValidLayout(layoutOption.value)"
-					  >
-					    <div class="filter-option-label">
-						
-						  <div class="row d-flex align-items-center">
-						    <div class="col-4"></div>
-						    <div class="col-8 text-left">{{layoutOption.name}}</div>
-						  </div> 							
-						
-						</div><div class="filter-option-check"><i class="fas fa-check" v-bind:class="{'d-none': !layoutOption.checked }"></i>
-						</div>
-					  </div>					  
-					</div>					
-				  </div>
-				  <div class="filter filter-finishes-section" v-if="filters.finishes" v-bind:class="{'dropdown-open': isFilterDropdownOpen('finishes') }">
-				    <div 
-					  class="filter-header" 
-					  v-on:click="toggleFilterDropdown('finishes')"
-					>
-				      <div class="filter-label">{{finishName}}</div>		
-					  <div class="filter-toggler"><i class="fas fa-caret-down"></i></div>	
-					</div>
-					<div 
-					  class="filter-body  has-height-transition"
-					  ___v-bind:style="{height:(isFilterDropdownOpen('finishes')?calcFilterDropdownHeight('finishes')+'px':'0px')}"
-					>
-					  <div 					  
-					    class="filter-option"  
-						v-if="filters.finishes && filters.finishes.filterSettings"
-					    v-for="(finishOption, index) in filters.finishes.filterSettings.options"
-						v-on:click="selectFilterOption('finishes', finishOption.value)"
-					  >
-					    <div class="filter-option-label">
-						  <div class="row d-flex align-items-center">
-						    <div class="col-4"></div>
-						    <div class="col-8 text-left">{{finishOption.name}}</div>
-						  </div> 							
-						
-						</div><div class="filter-option-check"><i class="fas fa-check"  v-bind:class="{'d-none': !finishOption.checked }"></i></div>
-					  </div>					  
-					</div>					
-				  </div>
-				  <div class="filter filter-price-section"  v-if="filters.price"  v-bind:class="{'dropdown-open': isFilterDropdownOpen('price') }">
-				    <div 
-					  class="filter-header"  
-					  v-on:click="toggleFilterDropdown('price')"
-					>
-				      <div class="filter-label">Price</div>		
-					  <div class="filter-toggler"><i class="fas fa-caret-down"></i></div>	
-					</div>
-					<div 
-					  class="filter-body  has-height-transition"
-					   ___v-bind:style="{height:(isFilterDropdownOpen('price')?'inherit':'0px')}"
-					>
-					  <div class="filter-option" v-on:click="(function(){filters.price.rangeValue.min=null;filters.price.rangeValue.max=null;}())">
-					    <div class="filter-option-label">
-						  <div class="row d-flex align-items-center" style="_width: 100%;">
-						    <span class="col-4"></span><span class="col-8 text-left">Any</span>
-						  </div>
-						</div><div class="filter-option-check"><i class="fas fa-check"  v-bind:class="{'d-none': (filters.price.rangeValue.min||filters.price.rangeValue.max) }"></i></div>
-					  </div>
-					  <div class="filter-option">
-					    <div class="filter-option-label"  style="width:100%;">
-						  <div class="row d-flex align-items-center" style="_width: 100%;margin:0px;">
-						    <span class="col-3">Min</span>
-							<div class="col-9  text-left">
-							
-							  <select class="col-9 d-none" style="width:70%;padding-left: 5px;" av-model:value="filters.price.rangeValue.min">
-							    <option value="null">Any</option>	
-						        <option v-for="(pric, index) in filters.price.filterSettings.pricelist"  v-bind:value="pric.value">{{pric.name}}</option>							
-							  </select>
-							  <input  class="col-9 field-price-input"   v-on:change="$event.target.value=onlyNumbersHere($event.target.value);filters.price.rangeValue.min=$event.target.value"  placeholder="Minimum price" />
-							  
-							</div>
-						  </div>
-						</div>
-						<div class="filter-option-check"><i class="fas fa-check d-none"></i></div>					  
-					  </div>
-					  <div class="filter-option">
-					    <div class="filter-option-label" style="width:100%;">
-						  <div class="row d-flex align-items-center" style="_width: 100%;margin:0px;">
-						    <span class="col-3">Max</span>
-							
-							<div class="col-9  text-left">
-							
-							  <select class="col-9 d-none"  style="width:70%;padding-left: 5px;"  av-model:value="filters.price.rangeValue.max">
-							    <option value="null">Any</option>	
-						        <option v-for="(pric, index) in filters.price.filterSettings.pricelist"  v-bind:value="pric.value">{{pric.name}}</option>							
-							  </select>
-							  <input  class="col-9 field-price-input"  v-on:change="$event.target.value=onlyNumbersHere($event.target.value);filters.price.rangeValue.max=$event.target.value"  placeholder="Maximum price" />
-							  
-							</div>
-								
-						  </div>
-						</div>
-						<div class="filter-option-check"><i class="fas fa-check d-none"></i></div>					  
-					  </div>					  
-					</div>					
-				  </div>				  
-				  <div class="filter filter-availability-section"    v-if="filters.availability"  v-bind:class="{'dropdown-open': isFilterDropdownOpen('availability') }">
-				    <div 
-					  class="filter-header" 
-					  v-on:click="toggleFilterDropdown('availability')"
-					 >
-				      <div class="filter-label">Availability</div>		
-					  <div class="filter-toggler"><i class="fas fa-caret-down"></i></div>	
-					</div>
-					<div 
-					  class="filter-body has-height-transition" 
-					  ___v-bind:style="{height:(isFilterDropdownOpen('availability')?calcFilterDropdownHeight('availability')+'px':'0px')}"
-					>
-					  <div class="filter-option"
-						v-if="filters.availability"
-					    v-for="(availabilityOption, index) in filters.availability.filterSettings.options"
-						v-on:click="selectFilterOption('availability', availabilityOption.value)"
-					  >
-					    <div class="filter-option-label">
-						  <div class="row d-flex align-items-center">
-						    <div class="col-4"></div>
-						    <div class="col-8 text-left">{{(availabilityOption.name===true)?'Available':'Unavailable'}}</div>
-						  </div> 
-						</div><div 
-						  class="filter-option-check"><i class="fas fa-check"  v-bind:class="{'d-none': !availabilityOption.checked }"></i>
-						</div>
-					  </div>			  
-					</div>					
-				  </div>
-				  <div class="filter filter-orientation-section d-none"   v-if="filters.orientation"  v-bind:class="{'dropdown-open': isFilterDropdownOpen('orientation') }">
-				    <div 
-					  class="filter-header" 
-					  v-on:click="toggleFilterDropdown('orientation')"
-					 >
-				      <div class="filter-label">Orientation</div>		
-					  <div class="filter-toggler"><i class="fas fa-caret-down"></i></div>	
-					</div>
-					<div 
-					  class="filter-body has-height-transition" 
-					  ___v-bind:style="{height:(isFilterDropdownOpen('orientation')?calcFilterDropdownHeight('orientation')+'px':'0px')}"
-					>
-					  <div class="filter-option"
-						v-if="filters.orientation"
-					    v-for="(orientationOption, index) in filters.orientation.filterSettings.options"
-						v-on:click="selectFilterOption('orientation', orientationOption.value)"
-					  >
-					    <div class="filter-option-label">
-						  <div class="row d-flex align-items-center">
-						    <div class="col-4"></div>
-						    <div class="col-8 text-left">{{orientationOption.name}}</div>
-						  </div> 						
-						
-						
-						
-						</div><div class="filter-option-check"><i class="fas fa-check"  v-bind:class="{'d-none': !orientationOption.checked }"></i></div>
-					  </div>			  
-					</div>					
-				  </div>				
-				  <div class="filter filter-agent-section"   v-if="filters.agent"  v-bind:class="{'dropdown-open': isFilterDropdownOpen('agent') }">
-				    <div
- 					  class="filter-header" 
-					  v-on:click="toggleFilterDropdown('agent')"
-					>
-				      <div class="filter-label">{{agentName}}</div>		
-					  <div class="filter-toggler"><i class="fas fa-caret-down"></i></div>	
-					</div>
-					<div 
-					  class="filter-body  has-height-transition"					  
-					  ___v-bind:style="{height:(isFilterDropdownOpen('agent')?calcFilterDropdownHeight('agent')+'px':'0px')}"
-					 >
-					  <div 
-					    class="filter-option" 
-						v-for="(agentOption, index) in filters.agent.filterSettings.options"
-						v-on:click="selectFilterOption('agent', agentOption.value);"
-					  >
-					    <div class="filter-option-label">
-						
-						  <div class="row d-flex align-items-center">
-						    <div class="col-4"></div>
-						    <div class="col-8 text-left">{{agentOption.name}}</div>
-						  </div> 							
-						
-						</div><div class="filter-option-check"><i class="fas fa-check" v-bind:class="{'d-none': !agentOption.checked }"></i>
-						</div>
-					  </div>					  
-					</div>					
-				  </div>				
-				</div>				
-			  </div>
-			  <div class="filter-section-footer">
-				<div class="d-flex align-items-center actions">
-				  <div class="text-right w-100">
-				    <span v-on:click="filterklass.closeFiltersMenu()">HIDE</span>
-				    <span v-on:click="clearAllFilters()">CLEAR</span>
-				    <span v-on:click="applyAllFilters()">APPLY</span>
-				  </div>
-				</div>
-				<div class="filter-section-logo" style="height: 15px;padding-left:20px;display: none;">
-				  <img src="assets/suitesflow.png" height="100%;padding:2px;">
-				</div>
-			  </div>			  
+
 			</div>
-`
-})
+			<div class="form-check-inline" style="margin-left: .75rem;margin-right: 0.5rem;" v-if="isCommercialVisible">
+				<div class="custom-control custom-checkbox ">
+					<input type="checkbox" class="custom-control-input" v-bind:name="getUniqueVue() + '_areatype'"
+						value="commercial" id="checkBoxCommercial" v-on:click="switchFilters">
+					<label class="custom-control-label" for="checkBoxCommercial">COMMERCIAL</label>
+				</div>
+
+			</div>
+			<div class="form-check-inline" style="margin-left: .75rem;margin-right: 0.5rem;" v-if="isAmmenitiesVisible">
+				<div class="custom-control custom-checkbox ">
+					<input type="checkbox" class="custom-control-input" v-bind:name="getUniqueVue() + '_areatype'"
+						id="checkBoxAmennities" value="common" v-on:change="switchFilters">
+					<label class="custom-control-label" for="checkBoxAmennities">AMENITIES</label>
+
+				</div>
+			</div>
+
+		</div>
+
+		<div class="filters" v-if="areaType==='appartment' || areaType==='commercial' || areaType==='common'"
+			v-bind:class="{'centerized-child':!filterklass.appartmentHasFilters() }">
+
+			<!--Layout -->
+			<div class="filter filter-layouts-section" v-if="filters.layouts && filters.layouts.visible &&  filterActivated('layout')"
+				v-bind:class="{'dropdown-open': isFilterDropdownOpen('layouts') }">
+				<div class="filter-header" v-on:click="toggleFilterDropdown('layouts')">
+					<div class="h4">Layout</div>
+				</div>
+				<div class="scroll-box mb-4">
+					<div class="d-flex scroll-box-content" v-on:mousedown="startScrolling" v-on:mousemove="scrolling"
+						v-on:mouseup="cancelScrollingOnMouseUp" v-on:mouseleave="cancelScrollingOnMouseLeave">
+						<div type="button" class="btn border m-1"
+							v-bind:class="{'filter-menu-item-selected': layoutOption.checked}"
+							v-for="(layoutOption, index) in filters.layouts.filterSettings.options"
+							v-on:click="selectFilterOption('layouts', layoutOption.value);"
+							v-if="isValidLayout(layoutOption.value)">
+							{{layoutOption.name}}
+						</div>
+					</div>
+				</div>
+				<div class="filter-separator"></div>
+			</div>
+
+
+			<!--Square Feet -->
+			<div class="filter filter-sqrFoot-section" 
+				v-if="filters.sqrFoot && filters.sqrFoot.visible &&  filterActivated('sqrFoot')" 
+				v-bind:class="{'dropdown-open': isFilterDropdownOpen('sqrFoot') }">
+
+				<div class="filter-header" v-on:click="toggleFilterDropdown('sqrFoot')">
+					<div class="h4">Square Feet</div>
+				</div>
+
+				<div class="pt-4 pb-4 pl-4 pr-5">
+					<vue-slider :min="squareRange.min" :max="squareRange.max" :marks="squareMarker" 
+						:tooltip-formatter="squareFormatter" 
+						v-model="squareSlider" :dot-options="dotOptions"></vue-slider>
+				</div>
+				<div class="filter-separator"></div>
+			</div>
+
+			<!--Finishes -->
+			<div class="filter filter-finishes-section" 
+				v-if="filters.finishes && filters.finishes.visible &&  filterActivated('finishes')" 
+				v-bind:class="{'dropdown-open': isFilterDropdownOpen('finishes') }">
+				<div class="filter-header" v-on:click="toggleFilterDropdown('finishes')">
+					<div class="h4">{{finishName}}</div>
+				</div>
+				<div class="scroll-box mb-4">
+					<div class="d-flex scroll-box-content" v-on:mousedown="startScrolling" v-on:mousemove="scrolling"
+						v-on:mouseup="cancelScrollingOnMouseUp" v-on:mouseleave="cancelScrollingOnMouseLeave">
+						<button type="button" class="btn border m-1  "
+							v-bind:class="{'filter-menu-item-selected': finishOption.checked}"
+							v-if="filters.finishes && filters.finishes.filterSettings"
+							v-for="(finishOption, index) in filters.finishes.filterSettings.options"
+							v-on:click="selectFilterOption('finishes', finishOption.value)">
+							{{finishOption.name}}
+						</button>
+					</div>
+				</div>
+				<div class="filter-separator"></div>
+			</div>
+
+			<!-- Suite name -->
+
+			<div class="filter filter-agent-section" v-if="filters.agent && filters.agent.visible &&  filterActivated('agent')">
+
+				<div class="filter-header" >
+					<div class="h4">{{agentName}}</div>
+
+				</div>
+				<div class="scroll-box mb-4">
+					<div class="d-flex scroll-box-content" v-on:mousedown="startScrolling" v-on:mousemove="scrolling"
+						v-on:mouseup="cancelScrollingOnMouseUp" v-on:mouseleave="cancelScrollingOnMouseLeave">
+						<button type="button" class="btn border m-1 "
+							v-bind:class="{'filter-menu-item-selected': agentOption.checked}"
+							v-for="(agentOption, index) in filters.agent.filterSettings.options"
+							v-on:click="selectFilterOption('agent', agentOption.value);">
+							{{agentOption.name}}
+						</button>
+					</div>
+
+				</div>
+				<div class="filter-separator"></div>
+			</div>
+
+			<!-- Prices -->
+			<div class="filter filter-price-section" v-if="filters.price && filters.price.visible &&  filterActivated('price')">
+				<div class="filter-header" v-on:click="toggleFilterDropdown('price')">
+					<div class="h4">Price</div>
+
+				</div>
+				<div class="pt-4 pb-4 pl-4 pr-5">
+					<vue-slider :min="priceRange.min" :max="priceRange.max" 
+						:tooltip-formatter="priceFormatter" 
+						:marks="priceMarker" v-model="priceSlider"
+						:dot-options="dotOptions"></vue-slider>
+				</div>
+
+				<div class="filter-separator mt-2"></div>
+			</div>
+
+			<!-- Occupation -->
+			<!--
+			<div class="filter filter-occupancy-section" v-if="filters.occupancy && filters.occupancy.visible" >
+				<div class="filter-header" >
+					<div class="h4">Occupancy</div>
+				</div>
+				<div class="scroll-box mb-4">
+
+					<div class="d-flex scroll-box-content" v-on:mousedown="startScrolling" v-on:mousemove="scrolling"
+						v-on:mouseup="cancelScrollingOnMouseUp" v-on:mouseleave="cancelScrollingOnMouseLeave">
+						<button type="button" class="btn border m-1 "
+							v-bind:class="{'filter-menu-item-selected': occupancyOption.checked}"
+							v-for="(occupancyOption, index) in filters.occupancy.filterSettings.options"
+							v-on:click="selectFilterOption('occupancy', occupancyOption.value);">
+							{{occupancyOption.name}}
+						</button>
+					</div>
+				</div>
+			</div>
+			-->
+
+			<!-- Orentation-->
+
+			<div class="filter filter-orientation-section" v-if="filters.orientation && filters.orientation.visible &&  filterActivated('orientation')">
+				<div class="filter-header">
+					<div class="h4">Orientation</div>
+				</div>
+			
+				<div class="scroll-box mb-4">
+					<div class="d-flex scroll-box-content" v-on:mousedown="startScrolling" v-on:mousemove="scrolling"
+						v-on:mouseup="cancelScrollingOnMouseUp" v-on:mouseleave="cancelScrollingOnMouseLeave">
+						<button type="button" class="btn border m-1 "
+							v-bind:class="{'filter-menu-item-selected': orientationOption.checked}"
+							v-for="(orientationOption, index) in filters.orientation.filterSettings.options"
+							v-on:click="selectFilterOption('orientation', orientationOption.value);">
+							{{orientationOption.name}} 
+						</button>
+					</div>
+
+				</div>
+				<div class="filter-separator"></div>
+				
+			</div>
+
+			<!-- availabiblity-->
+			<div class="filter filter-availability-section" v-if="filters.availability && filters.availability.visible &&  filterActivated('availability')"
+				v-bind:class="{'dropdown-open': isFilterDropdownOpen('availability') }">
+				<div class="filter-header" v-on:click="toggleFilterDropdown('availability')">
+					<div class="h4">Availability</div>
+
+				</div>
+				<div class="scroll-box mb-4">
+					<div class="d-flex scroll-box-content" v-on:mousedown="startScrolling" v-on:mousemove="scrolling"
+						v-on:mouseup="cancelScrollingOnMouseUp" v-on:mouseleave="cancelScrollingOnMouseLeave">
+						<button type="button" class="btn  border m-1"
+							v-bind:class="{'filter-menu-item-selected': availabilityOption.checked}"
+							v-for="(availabilityOption, index) in filters.availability.filterSettings.options"
+							v-on:click="selectFilterOption('availability', availabilityOption.value);">
+							{{(availabilityOption.name===true)?'Available':'Unavailable'}}
+						</button>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+	<div class="filter-section-actions ">
+		<div class="d-flex justify-content-around">
+			<div d-flex align-items-center justify-content-around>
+				<button type="button" class="btn btn-lg btn-border " v-on:click="filterklass.closeFiltersMenu()">Close
+					Filters</button>
+				<button type="button" class="btn btn-lg btn-border primary-background-color  text-white font-weight-bold"
+					v-on:click="applyAllFilters()">Apply</button>
+			</div>
+			<div class="d-flex align-items-center actions">
+				<span v-on:click="clearAllFilters()">Reset all filters</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="filter-section-footer d-flex align-items-center justify-content-around ">
+		<div class="h4 ">
+				{{datamodel.buildingAddress}}
+		</div>
+		<!--
+		<div class="filter-section-logo" style="height: 15px;padding-left:20px;display: none;">
+			<img src="assets/suitesflow.png" height="100%;padding:2px;">
+		</div>
+		-->
+	</div>
+</div>`
+
+});
