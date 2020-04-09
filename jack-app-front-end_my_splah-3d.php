@@ -779,11 +779,6 @@
 			background-color: #ffffff;
 		}
 
-		.overflow-x-scroll{
-			overflow-x: auto;
-			overflow-y: hidden;
-		}
-
 		.filter-menu-component {
 			height: 100%;
 			width: 30%;
