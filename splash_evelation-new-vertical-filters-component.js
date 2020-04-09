@@ -1,94 +1,106 @@
-class ElevationFilterKlass {
+class CustomElevationFilterKlass {
 	constructor() {
-		this.filterMenuOpen = true
-		this.searchableData = null
-		this.filters = null
-		this.actives = []
-		this.filterMenuParentDom = null
+		this.filterMenuOpen = true;
+		this.searchableData = null;
+		this.filters = null;
+		this.filtersBasedOnAreaType = {};
+		this.AREA_TYPES = {
+			APARTMENT: 'appartment',
+			COMMERCIAL: 'commercial',
+			COMMON: 'common',
+			toList: function () {
+				return [this.APARTMENT, this.COMMERCIAL, this.COMMON]
+			}
+		};
+		this.actives = [];
+		this.filterMenuParentDom = null;
 		this.lastSearch = {
 			tm: null,
 			numResults: 0
-		}
+		};
 		this.VUE_COMPONENTS = {
 			header: null,
 			filterMenu: null
 		}
 	}
 	init(elevationDiv) {
-		this.filterMenuParentDom = elevationDiv
-		let THAT = this
+		this.filterMenuParentDom = elevationDiv;
+		let THAT = this;
 		/* init  2 vue components for: header tags and filter sections */
 		this.VUE_COMPONENTS.filterMenu = new Vue({
-			el: elevationDiv.find(".filter-menu-component")[0],
-			data: function() {
+			el: elevationDiv.find('.filter-menu-component')[0],
+			data: function () {
 				return {
 					filterklass_inst: THAT,
 					//filterklass_filters: THAT.filters,
 					filterklass_lastsearch: THAT.lastSearch
 				}
+			},
+			components: {
+				'vueSlider': 'vue-slider-component'
 			}
-		})
+		});
 		this.VUE_COMPONENTS.header = new Vue({
-			el: elevationDiv.find(".filter-elevation-header-component")[0],
-			data: function() {
+			el: elevationDiv.find('.filter-elevation-header-component')[0],
+			data: function () {
 				return {
 					filterklass_inst: THAT,
 					filterklass_actives: THAT.actives
 				}
 			}
-		})
+		});
 
-		this.onApplyFilters = function(af) {
-			THAT.actives = af
+		this.onApplyFilters = function (af) {
+			THAT.actives = af;
 		}
+
 	}
 	/* methods for open/close/toggle filter menu */
 	updateFiltersMenuPosition() {
-		let menuDOM = this.filterMenuParentDom.find(".filter-menu-component").eq(0)
-		let w = menuDOM.width() + 2
-		menuDOM.css("right", -1 * w + "px")
+		let menuDOM = this.filterMenuParentDom.find('.filter-menu-component').eq(0);
+		let w = menuDOM.width() + 2;
+		menuDOM.css('right', (-1) * w + 'px');
 	}
 	closeFiltersMenu() {
-		let menuDOM = this.filterMenuParentDom.find(".filter-menu-component").eq(0)
-		this.updateFiltersMenuPosition()
-		menuDOM.addClass("filter-menu-closed")
+		let menuDOM = this.filterMenuParentDom.find('.filter-menu-component').eq(0);
+		this.updateFiltersMenuPosition();
+		menuDOM.addClass('filter-menu-closed');
 		if (this.onFiltersMenuClose) {
-			this.onFiltersMenuClose(this)
+			this.onFiltersMenuClose(this);
 		}
 	}
 	openFiltersMenu() {
-		let menuDOM = this.filterMenuParentDom.find(".filter-menu-component").eq(0)
-		menuDOM.css("right", "0")
-		menuDOM.removeClass("filter-menu-closed")
+		let menuDOM = this.filterMenuParentDom.find('.filter-menu-component').eq(0);
+		menuDOM.css('right', '0');
+		menuDOM.removeClass('filter-menu-closed');
 		if (this.onFiltersMenuOpen) {
-			this.onFiltersMenuOpen(this)
+			this.onFiltersMenuOpen(this);
 		}
 	}
 	toggleFiltersMenu() {
-		let menuDOM = this.filterMenuParentDom.find(".filter-menu-component").eq(0)
-		if (menuDOM.hasClass("filter-menu-closed")) {
-			this.openFiltersMenu()
+		let menuDOM = this.filterMenuParentDom.find('.filter-menu-component').eq(0);
+		if (menuDOM.hasClass('filter-menu-closed')) {
+			this.openFiltersMenu();
 		} else {
-			this.closeFiltersMenu()
+			this.closeFiltersMenu();
 		}
 	}
 
+
 	/* methods for searching data */
 	searchFilter(prop, storedValue, pattern) {
-		if (!pattern) {
-			return
-		}
-		if (prop === "appartmentName") {
-			let string = storedValue
+		if (!pattern) { return; }
+		if (prop === 'appartmentName') {
+			let string = storedValue;
 			if (string.indexOf(pattern) !== -1 || string.indexOf(pattern.toUpperCase()) !== -1) {
-				return true
+				return true;
 			}
-			let patt = new RegExp(pattern, "i")
+			let patt = new RegExp(pattern, "i");
 			if (patt.test(string)) {
-				return true
+				return true;
 			}
 		}
-		return false
+		return false;
 	}
 	matchFilterPropWithAreaProp(prop) {
 		let areaData = {
@@ -114,263 +126,444 @@ class ElevationFilterKlass {
 			cornerWith_UNIQUE_ID: null,
 			cornerConfirmed: false,
 			choosenMedia: null
-		}
+		};
 		if (areaData.hasOwnProperty(prop)) {
-			return prop
+			return prop;
 		}
-		if (areaData.hasOwnProperty(prop + "s")) {
-			return prop + "s"
+		if (areaData.hasOwnProperty(prop + 's')) {
+			return prop + 's';
 		}
-		if (prop[prop.length - 1] === "s" && areaData.hasOwnProperty(prop.substring(0, prop.length - 1))) {
-			return prop.substring(0, prop.length - 1)
+		if (prop[prop.length - 1] === 's' && areaData.hasOwnProperty(prop.substring(0, prop.length - 1))) {
+			return prop.substring(0, prop.length - 1);
 		}
-		return prop
+		return prop;
 	}
 	matchAreaDataWithFilterProp(areaDataProp) {
 		let filtersToAreaDataProps = {
-			availability: "availability",
-			layout: "layouts",
-			price: "price",
-			finishes: "finishes",
-			optionals: "optionals",
-			agent: "agent",
-			appartmentName: "appartmentName",
-			orientation: "orientation",
-			sqrFoot: "sqrFoot"
-		}
+			'availability': 'availability',
+			'layout': 'layouts',
+			'price': 'price',
+			'finishes': 'finishes',
+			'optionals': 'optionals',
+			'agent': 'agent',
+			'appartmentName': 'appartmentName',
+			'orientation': 'orientation',
+			'sqrFoot': 'sqrFoot'
+		};
 		if (filtersToAreaDataProps.hasOwnProperty(areaDataProp)) {
-			return filtersToAreaDataProps[areaDataProp]
+			return filtersToAreaDataProps[areaDataProp];
 		}
-		return areaDataProp
+		return areaDataProp;
 	}
 	string2literal(value) {
 		var maps = {
-			true: true,
-			false: false,
-			NaN: NaN,
-			null: null,
-			undefined: undefined,
-			Infinity: Infinity,
+			"true": true,
+			"false": false,
+			"NaN": NaN,
+			"null": null,
+			"undefined": undefined,
+			"Infinity": Infinity,
 			"-Infinity": -Infinity
 		}
-		return value in maps ? maps[value] : value
+		return ((value in maps) ? maps[value] : value);
 	}
 	isAreaDataMatchFilter(areaData, filterObj) {
-		let objValue
-		let value = filterObj.filterValue
-		let prop = this.matchFilterPropWithAreaProp(filterObj.propName)
-		if (prop === "price" || prop === "sqrFoot") {
+		let objValue;
+		let value = filterObj.filterValue;
+		let prop = this.matchFilterPropWithAreaProp(filterObj.propName);
+		if (prop === 'price' || prop === 'sqrFoot') {
 			/* if both min and max are selected */
-
 			if (this.string2literal(filterObj.rangeValue.min) && this.string2literal(filterObj.rangeValue.max)) {
 				if (
-					this.formatPriceEntry(areaData.RENDERATOR.dataEntry[prop]) >= parseFloat(filterObj.rangeValue.min, 10) &&
+					this.formatPriceEntry(areaData.RENDERATOR.dataEntry[prop]) >= parseFloat(filterObj.rangeValue.min, 10)
+					&&
 					this.formatPriceEntry(areaData.RENDERATOR.dataEntry[prop]) <= parseFloat(filterObj.rangeValue.max, 10)
 				) {
-					return true
-				}
-			} else if (this.string2literal(filterObj.rangeValue.min) || this.string2literal(filterObj.rangeValue.max)) {
-			/* if min OR max is selected but not both */
-				if (
-					(filterObj.rangeValue.min && this.formatPriceEntry(areaData.RENDERATOR.dataEntry[prop]) >= parseFloat(filterObj.rangeValue.min, 10)) ||
-					(filterObj.rangeValue.max && this.formatPriceEntry(areaData.RENDERATOR.dataEntry[prop]) <= parseFloat(filterObj.rangeValue.max, 10))
-				) {
-					return true
+					return true;
 				}
 			}
-		} else if (prop === "availability") {
-			if (areaData.RENDERATOR.dataEntry["availability"] !== "null" && areaData.RENDERATOR.dataEntry["availability"] !== null) {
-				objValue = areaData.RENDERATOR.dataEntry["availability"] === "true" || areaData.RENDERATOR.dataEntry["availability"] === true
+			else
+				/* if min OR max is selected but not both */
+				if (this.string2literal(filterObj.rangeValue.min) || this.string2literal(filterObj.rangeValue.max)) {
+					if (
+						(filterObj.rangeValue.min && this.formatPriceEntry(areaData.RENDERATOR.dataEntry[prop]) >= parseFloat(filterObj.rangeValue.min, 10))
+						||
+						(filterObj.rangeValue.max && this.formatPriceEntry(areaData.RENDERATOR.dataEntry[prop]) <= parseFloat(filterObj.rangeValue.max, 10))
+					) {
+						return true;
+					}
+				}
+		} else if (prop === 'availability') {
+			if (areaData.RENDERATOR.dataEntry['availability'] !== 'null' && areaData.RENDERATOR.dataEntry['availability'] !== null) {
+				objValue = (areaData.RENDERATOR.dataEntry['availability'] === 'true' || areaData.RENDERATOR.dataEntry['availability'] === true);
 			} else {
-				objValue = null
+				objValue = null;
 			}
-			let criterioValue = value === "true" || value === true
+			let criterioValue = (value === 'true' || value === true);
 			if (criterioValue === objValue) {
-				return true
+				return true;
 			}
-		} else if (prop === "occupancy") {
-			if (value > 0 && areaData.RENDERATOR.dataEntry["sqrFoot"]) {
-				let minSqrFoot = value * 100
-				let maxSqrFoot = value * 150
-				let sqrFootINT = parseFloat(areaData.RENDERATOR.dataEntry["sqrFoot"], 10)
+		} else if (prop === 'occupancy') {
+
+			if (value > 0 && areaData.RENDERATOR.dataEntry['sqrFoot']) {
+				let minSqrFoot = value * 100;
+				let maxSqrFoot = value * 150;
+				let sqrFootINT = parseFloat(areaData.RENDERATOR.dataEntry['sqrFoot'], 10);
 
 				if (sqrFootINT >= minSqrFoot && sqrFootINT <= maxSqrFoot) {
-					return true
+					return true;
 				}
+
 			}
+
 		} else if (areaData.RENDERATOR.dataEntry[prop] === value || this.searchFilter(prop, areaData.RENDERATOR.dataEntry[prop], value) === true) {
-			return true
+			return true;
 		}
-		return false
+		return false;
 	}
 	clearSearchResults(seachableData) {
 		if (!seachableData) {
-			seachableData = this.searchableData
+			seachableData = this.searchableData;
 		}
 		for (let a = 0; a < seachableData.length; a++) {
-			seachableData[a].lastSearch = null
+			seachableData[a].lastSearch = null;
 		}
-		this.actives = {}
+		this.actives = {};
 
 		if (this.onClearSearchResults) {
-			this.onClearSearchResults()
+			this.onClearSearchResults();
 		}
 	}
 	doSearch(seachableData) {
 		if (!seachableData) {
-			seachableData = this.searchableData
+			seachableData = this.searchableData;
 		}
 
 		// console.log("search able data : ", seachableData);
-		this.lastSearch.tm = new Date().getTime()
-		let THAT = this
-		let results = []
+		this.lastSearch.tm = new Date().getTime();
+		let THAT = this;
+		let results = [];
 		for (let a = 0; a < seachableData.length; a++) {
-			let matchWithAll = true
+			let matchWithAll = true;
 			for (let f in this.actives) {
-				let activeFilterObj = this.actives[f]
-				let isMatch = this.isAreaDataMatchFilter(seachableData[a], activeFilterObj)
+				let activeFilterObj = this.actives[f];
+				let isMatch = this.isAreaDataMatchFilter(seachableData[a], activeFilterObj);
 				if (isMatch === false) {
-					matchWithAll = false
-					break
+					matchWithAll = false;
+					break;
 				}
 			}
 			if (matchWithAll === true) {
-				seachableData[a].lastSearch = { tm: THAT.lastSearch.tm, filtered: true }
-				results.push(seachableData[a])
+				seachableData[a].lastSearch = { tm: THAT.lastSearch.tm, filtered: true };
+				results.push(seachableData[a]);
 			} else {
-				seachableData[a].lastSearch = { tm: THAT.lastSearch.tm, filtered: false }
+				seachableData[a].lastSearch = { tm: THAT.lastSearch.tm, filtered: false };
 			}
 		}
 
+
 		if (this.onDidSearch) {
-			this.onDidSearch(this.actives, results)
+
+			this.onDidSearch(this.actives, results);
+
 		}
-		this.lastSearch.numResults = results.length
-		this.closeFiltersMenu()
-		return results
+		this.lastSearch.numResults = results.length;
+		this.closeFiltersMenu();
+		return results;
 	}
 	formatPriceEntry(pri) {
-		let splitted
-		let price = pri
-		let realPrice
-		if (price && price.split(",").length > 2) {
-			splitted = price.replace(/,([^,]*)$/, ".$1")
+		let splitted;
+		let price = pri;
+		let realPrice;
+		if (price && price.split(',').length > 2) {
+			splitted = price.replace(/,([^,]*)$/, '.$1');
 		} else {
-			splitted = price
+			splitted = price;
 		}
 		if (price) {
-			realPrice = parseFloat(splitted.replace(/,/g, ""))
+			realPrice = parseFloat(splitted.replace(/,/g, ''));
 		} else {
-			realPrice = price
+			realPrice = price;
 		}
-		return realPrice
+		return realPrice;
 	}
 	createPriceOptions(seachableData) {
-		let THAT = this
-		let uniques = []
-		let priceList = []
+		let THAT = this;
+		let uniquesBasedOnAreaTypes = {};
+		let priceListBasedOnAreaTypes = {};
+
+		this.AREA_TYPES.toList().forEach(function (areaType) {
+			uniquesBasedOnAreaTypes['' + areaType] = [];
+			priceListBasedOnAreaTypes['' + areaType] = []
+		});
+
+		//let uniques = [];
+		//let priceList = [];
 		if (!seachableData) {
-			seachableData = this.searchableData
+			seachableData = this.searchableData;
 		}
-		if (!this.filters.price || !this.filters.price.filterSettings) {
-			return
-		}
-		if (!this.filters.price.filterSettings.pricelist || this.filters.price.filterSettings.pricelist.length === 0) {
-		}
+		// if (!this.filters.price || !this.filters.price.filterSettings ) {
+		//     return;
+		// }
+
+		// if (!this.filters.price.filterSettings.pricelist || this.filters.price.filterSettings.pricelist.length === 0) {}
+
 		for (let o = 0; o < seachableData.length; o++) {
 			if (seachableData[o].RENDERATOR.dataEntry && seachableData[o].RENDERATOR.dataEntry.price) {
+
+				let uniques = uniquesBasedOnAreaTypes[seachableData[o].RENDERATOR.dataEntry.areaType];
+				let priceList = priceListBasedOnAreaTypes[seachableData[o].RENDERATOR.dataEntry.areaType];
+
 				if (uniques.indexOf(seachableData[o].RENDERATOR.dataEntry.price) === -1) {
-					let splitted
-					let price = seachableData[o].RENDERATOR.dataEntry.price
-					if (price.split(",").length > 2) {
-						splitted = price.replace(/,([^,]*)$/, ".$1")
+					let splitted;
+					let price = seachableData[o].RENDERATOR.dataEntry.price;
+					if (price.split(',').length > 2) {
+						splitted = price.replace(/,([^,]*)$/, '.$1');
 					} else {
-						splitted = price
+						splitted = price;
 					}
-					let realPrice = parseFloat(splitted.replace(/,/g, ""))
-					priceList.push({ value: realPrice, name: seachableData[o].RENDERATOR.dataEntry.price })
-					uniques.push(seachableData[o].RENDERATOR.dataEntry.price)
+					let realPrice = parseFloat(splitted.replace(/,/g, ''));
+					priceList.push({ value: realPrice, name: seachableData[o].RENDERATOR.dataEntry.price });
+					uniques.push(seachableData[o].RENDERATOR.dataEntry.price);
 				}
 			}
 		}
-		priceList.sort(function(a, b) {
-			return a.value - b.value
-		})
-		if (priceList.length > 0) {
-			let stepArray = []
-			let MIN_VALUE = priceList[0].value
-			let MAX_VALUE = priceList[priceList.length - 1].value
-			let DIFFERENCE = MAX_VALUE - MIN_VALUE
-			let step = 500
-			let numOptions = Math.ceil(DIFFERENCE / step)
-			let startingFrom = parseInt(MIN_VALUE / step, 10) * step
-			for (let n = 0; n < numOptions + 2; n++) {
-				stepArray.push({ value: startingFrom + n * 500, name: startingFrom + n * 500 + " $" })
-			}
-			//--this.pricelist = stepArray;
-			this.filters.price.filterSettings.pricelist = stepArray
-			this.filters.price.filterSettings.minValue = stepArray[0].value
-			this.filters.price.filterSettings.maxValue = stepArray[stepArray.length - 1].value
-		}
-	}
-	activateFiltersFromSetup(filtersFromSetup) {
-		/*
-	for (let f in this.filters) {
-	  if (!filtersFromSetup[f] || !filtersFromSetup[f].active) {  
-        delete this.filters[f];	  
-	  }	
-	}
-  */
 
+		THAT.AREA_TYPES.toList().forEach(function (areaType) {
+
+			let priceList = priceListBasedOnAreaTypes[areaType];
+
+			priceList.sort(function (a, b) { return a.value - b.value; });
+			if (priceList.length > 0) {
+				let stepArray = [];
+				let MIN_VALUE = priceList[0].value;
+				let MAX_VALUE = priceList[priceList.length - 1].value;
+				let DIFFERENCE = MAX_VALUE - MIN_VALUE;
+				let step = 500;
+				let numOptions = Math.ceil(DIFFERENCE / step);
+				let startingFrom = parseInt(MIN_VALUE / step, 10) * step;
+				for (let n = 0; n < numOptions + 2; n++) {
+					stepArray.push({ value: startingFrom + n * 500, name: startingFrom + n * 500 + ' $' });
+				}
+				//--this.pricelist = stepArray;
+				THAT.filtersBasedOnAreaType[areaType].price.filterSettings.pricelist = stepArray;
+				THAT.filtersBasedOnAreaType[areaType].price.filterSettings.minValue = stepArray[0].value;
+				THAT.filtersBasedOnAreaType[areaType].price.filterSettings.maxValue = stepArray[stepArray.length - 1].value;
+			}
+		});
+
+
+	}
+
+	createSqrFootOptions(seachableData) {
+		let THAT = this;
+
+		let uniquesBasedOnAreaTypes = {};
+		let sqrFootListBasedOnAreaTypes = {};
+
+		this.AREA_TYPES.toList().forEach(function (areaType) {
+			uniquesBasedOnAreaTypes['' + areaType] = [];
+			sqrFootListBasedOnAreaTypes['' + areaType] = []
+		});
+
+		// let uniques = [];
+		// let sqrFootList = [];
+		if (!seachableData) {
+			seachableData = this.searchableData;
+		}
+		// if (!this.filters.sqrFoot || !this.filters.sqrFoot.filterSettings ) {
+		// 	return;
+		// }
+		// if (!this.filters.sqrFoot.filterSettings.sqrFootlist || this.filters.sqrFoot.filterSettings.sqrFootlist.length === 0) {}
+		for (let o = 0; o < seachableData.length; o++) {
+			if (seachableData[o].RENDERATOR.dataEntry && seachableData[o].RENDERATOR.dataEntry.sqrFoot) {
+
+				let uniques = uniquesBasedOnAreaTypes[seachableData[o].RENDERATOR.dataEntry.areaType];
+				let sqrFootList = sqrFootListBasedOnAreaTypes[seachableData[o].RENDERATOR.dataEntry.areaType];
+
+				if (uniques.indexOf(seachableData[o].RENDERATOR.dataEntry.sqrFoot) === -1) {
+					let splitted;
+					let sqrFoot = seachableData[o].RENDERATOR.dataEntry.sqrFoot;
+					if (sqrFoot.split(',').length > 2) {
+						splitted = sqrFoot.replace(/,([^,]*)$/, '.$1');
+					} else {
+						splitted = sqrFoot;
+					}
+					let realsqrFoot = parseFloat(splitted.replace(/,/g, ''));
+					sqrFootList.push({ value: realsqrFoot, name: seachableData[o].RENDERATOR.dataEntry.sqrFoot });
+					uniques.push(seachableData[o].RENDERATOR.dataEntry.sqrFoot);
+				}
+			}
+		}
+
+		THAT.AREA_TYPES.toList().forEach(function (areaType) {
+
+			let sqrFootList = sqrFootListBasedOnAreaTypes[areaType];
+
+			sqrFootList.sort(function (a, b) { return a.value - b.value; });
+
+			if (sqrFootList.length > 0) {
+				let stepArray = [];
+				let MIN_VALUE = sqrFootList[0].value;
+				let MAX_VALUE = sqrFootList[sqrFootList.length - 1].value;
+				let DIFFERENCE = MAX_VALUE - MIN_VALUE;
+				let step = 500;
+				let numOptions = Math.ceil(DIFFERENCE / step);
+				let startingFrom = parseInt(MIN_VALUE / step, 10) * step;
+				for (let n = 0; n < numOptions + 2; n++) {
+					stepArray.push({ value: startingFrom + n * 500, name: startingFrom + n * 500 + ' $' });
+				}
+				//--this.sqrFootlist = stepArray;
+				THAT.filtersBasedOnAreaType[areaType].sqrFoot.filterSettings.sqrFootlist = stepArray;
+				THAT.filtersBasedOnAreaType[areaType].sqrFoot.filterSettings.minValue = stepArray[0].value;
+				THAT.filtersBasedOnAreaType[areaType].sqrFoot.filterSettings.maxValue = stepArray[stepArray.length - 1].value;
+			}
+		});
+	}
+
+	isFilterWithAreaTypeVisible(areaType, currentActivatedFilters) {
+		let visible = false;
+		let filters = this.filtersBasedOnAreaType[areaType];
+
+		for (let prop in filters) {
+			let filterItem = filters[prop];
+
+			if (currentActivatedFilters.includes(prop) && filterItem.visible) {
+				visible = true
+				break;
+			}
+		}
+
+		return visible;
+	}
+
+	activateFiltersFromSetup(filtersFromSetup) {
+        /*
+          for (let f in this.filters) {
+            if (!filtersFromSetup[f] || !filtersFromSetup[f].active) {
+              delete this.filters[f];
+            }
+          }
+        */
 		for (let f in filtersFromSetup) {
 			if (!this.filters[f] || (this.filters[f] && !filtersFromSetup[f].active)) {
-				delete this.filters[f]
+				delete this.filters[f];
 			}
 		}
 	}
 	/* methods to create filter objects */
 	createFilters(areasArray) {
-		let THAT = this
+		let THAT = this;
 		// this.actives = {};
-		this.filters = {
-			availability: null,
-			layouts: null,
-			price: null,
-			finishes: null,
-			// 'optionals': null ,
-			agent: null,
-			appartmentName: null,
-			orientation: null,
-			sqrFoot: null,
-			occupancy: null
-		}
-		for (let p in this.filters) {
-			this.filters[p] = this.createFilterObj(p)
-			// this.actives[p] = null;
-		}
-		this.gatherAreaOptions(areasArray)
-		this.createPriceOptions()
 
-		this.filters["occupancy"].defaultValue = ""
+		this.AREA_TYPES.toList().forEach(function (areaType) {
 
-		this.filters["appartmentName"].defaultValue = ""
-		this.filters["layouts"].filterSettings.options.unshift({ name: "Any", value: null, checked: true, dontApplyToSearch: true })
-		this.filters["finishes"].filterSettings.options.unshift({ name: "Any", value: null, checked: true, dontApplyToSearch: true })
-		this.filters["agent"].filterSettings.options.unshift({ name: "Any", value: null, checked: true, dontApplyToSearch: true })
-		this.filters["orientation"].filterSettings.options.unshift({ name: "Any", value: null, checked: true, dontApplyToSearch: true })
+			let filters = {
+				'availability': null,
+				'layouts': null,
+				'price': null,
+				'finishes': null,
+				// 'optionals': null ,
+				'agent': null,
+				'appartmentName': null,
+				'orientation': null,
+				'sqrFoot': null,
+				'occupancy': null
+			};
 
-		this.filters["availability"].filterSettings.options.unshift({ name: false, value: false, checked: false })
-		this.filters["availability"].filterSettings.options.unshift({ name: true, value: true, checked: false })
-		this.filters["availability"].defaultValue = true
-		this.selectFilterOption("availability", true)
+			for (let p in filters) {
+				filters[p] = THAT.createFilterObj(p);
+			}
 
-		this.filters["areaType"] = this.createFilterObj("areaType")
-		this.filters["areaType"].filterSettings.options.unshift({ name: "appartment", value: "appartment", checked: true })
-		this.filters["areaType"].filterSettings.options.unshift({ name: "amenity", value: "common", checked: false })
-		this.filters["areaType"].filterSettings.options.unshift({ name: "commercial", value: "commercial", checked: false })
-		this.filters["areaType"].defaultValue = "appartment"
-		this.selectFilterOption("areaType", "appartment")
+			THAT.filtersBasedOnAreaType['' + areaType] = filters;
+
+		});
+
+
+		// this.filters = {
+		//     'availability': null ,
+		//     'layouts': null ,
+		//     'price': null ,
+		//     'finishes': null ,
+		//     // 'optionals': null ,
+		//     'agent': null ,
+		//     'appartmentName': null,
+		//     'orientation': null,
+		//     'sqrFoot': null,
+		//     'occupancy': null
+		// };
+		// for (let p in this.filters) {
+		//     this.filters[p] = this.createFilterObj(p);
+		//     // this.actives[p] = null;
+		// }
+		this.gatherAreaOptions(areasArray);
+		this.createPriceOptions(areasArray);
+
+		this.createSqrFootOptions(areasArray);
+
+		this.filters = this.filtersBasedOnAreaType[this.AREA_TYPES.APARTMENT];
+		this.filters['occupancy'].defaultValue = '';
+
+		this.filters['appartmentName'].defaultValue = '';
+		this.filters['layouts'].filterSettings.options.unshift({ name: 'Any', value: null, checked: true, dontApplyToSearch: true });
+		this.filters['finishes'].filterSettings.options.unshift({ name: 'Any', value: null, checked: true, dontApplyToSearch: true });
+		this.filters['agent'].filterSettings.options.unshift({ name: 'Any', value: null, checked: true, dontApplyToSearch: true });
+		this.filters['orientation'].filterSettings.options.unshift({ name: 'Any', value: null, checked: true, dontApplyToSearch: true });
+
+
+		this.filters['availability'].filterSettings.options.unshift({ name: false, value: false, checked: false });
+		this.filters['availability'].filterSettings.options.unshift({ name: true, value: true, checked: false });
+		this.filters['availability'].defaultValue = true;
+		this.selectFilterOption('availability', true);
+
+		// this.filters['areaType'] = this.createFilterObj('areaType');
+		// this.filters['areaType'].filterSettings.options.unshift({ name: 'appartment', value: 'appartment', checked: true });
+		// this.filters['areaType'].filterSettings.options.unshift({ name: 'amenity', value: 'common', checked: false });
+		// this.filters['areaType'].filterSettings.options.unshift({ name: 'commercial', value: 'commercial', checked: false });
+		// this.filters['areaType'].defaultValue = 'appartment';
+
+
+
+		this.AREA_TYPES.toList().forEach(function (areaType) {
+
+
+			let filters = THAT.filtersBasedOnAreaType[areaType];
+
+			for (let propName in filters) {
+				if (propName === 'price') {
+					if (filters[propName].filterSettings.pricelist.length === 0) {
+						filters[propName].visible = false;
+					} else {
+						filters[propName].visible = true;
+					}
+				} else if (propName === 'sqrFoot') {
+					if (filters[propName].filterSettings.sqrFootlist.length === 0) {
+						filters[propName].visible = false;
+					} else {
+						filters[propName].visible = true;
+					}
+				} else {
+					if (filters[propName].filterSettings.options.length === 0) {
+						filters[propName].visible = false;
+					} else {
+						filters[propName].visible = true;
+					}
+				}
+			}
+
+			
+
+			filters['areaType'] = THAT.createFilterObj('areaType');
+			filters['areaType'].filterSettings.options.unshift({ name: 'appartment', value: 'appartment', checked: true });
+			filters['areaType'].filterSettings.options.unshift({ name: 'amenity', value: 'common', checked: false });
+			filters['areaType'].filterSettings.options.unshift({ name: 'commercial', value: 'commercial', checked: false });
+			filters['areaType'].defaultValue = 'appartment';
+
+			console.log('areaType', areaType, THAT.filtersBasedOnAreaType[areaType])
+			console.log('-----')
+		});
+
+		this.selectFilterOption('areaType', 'appartment');
 	}
 	createFilterObj(searchableProp) {
 		let filterObj = {
@@ -391,289 +584,368 @@ class ElevationFilterKlass {
 				isOpen: false,
 				animation: true
 			}
-		}
-		return filterObj
+		};
+		return filterObj;
 	}
 	gatherAreaOptions(areasArray) {
-		let THAT = this
-		let uniqueOptions = {}
-		function scanAreaProps(inst, areaData) {
+		let THAT = this;
+		let uniqueOptions = {};
+		function scanAreaProps(filters, areaData, areaType) {
 			for (let pr in areaData) {
 				if (
-					(inst.filters.hasOwnProperty(pr) || inst.filters.hasOwnProperty(THAT.matchAreaDataWithFilterProp(pr))) &&
-					!/(occupancy|sqrFoot|price|appartmentName|optionals|availability)/.test(pr)
-				) {
-					let filterPr = THAT.matchAreaDataWithFilterProp(pr)
+					(
+						filters.hasOwnProperty(pr)
+						|| filters.hasOwnProperty(THAT.matchAreaDataWithFilterProp(pr))
+					)
+					&& !/(occupancy|sqrFoot|price|appartmentName|optionals|availability)/.test(pr)) {
+					let filterPr = THAT.matchAreaDataWithFilterProp(pr);
 					if (!uniqueOptions.hasOwnProperty(filterPr)) {
-						uniqueOptions[filterPr] = []
+						uniqueOptions[filterPr] = [];
 					}
 					if (uniqueOptions[filterPr].indexOf(areaData[pr]) === -1 && areaData[pr] != null) {
-						uniqueOptions[filterPr].push(areaData[pr])
-						inst.filters[filterPr].filterSettings.options.push({ name: areaData[pr], value: areaData[pr], checked: false })
+						uniqueOptions[filterPr].push(areaData[pr]);
+						filters[filterPr].filterSettings.options.push({ name: areaData[pr], value: areaData[pr], checked: false });
 					}
 				}
 			}
 		}
 		for (let k = 0; k < areasArray.length; k++) {
-			if (areasArray[k].hasOwnProperty("RENDERATOR") && areasArray[k].RENDERATOR.dataEntry) {
-				scanAreaProps(THAT, areasArray[k].RENDERATOR.dataEntry)
+			if (areasArray[k].hasOwnProperty('RENDERATOR') && areasArray[k].RENDERATOR.dataEntry) {
+				let areaType = areasArray[k].RENDERATOR.dataEntry.areaType;
+				scanAreaProps(THAT.filtersBasedOnAreaType['' + areaType], areasArray[k].RENDERATOR.dataEntry, areaType);
 			}
 		}
 	}
+	gatherPricesOptions(areasArray) {
+		let THAT = this;
+		let uniqueOptions = {};
+		function scanPriceProps(inst, areaData) {
+			for (let pr in areaData) {
+				if ((inst.filters.hasOwnProperty(pr) || inst.filters.hasOwnProperty(THAT.matchAreaDataWithFilterProp(pr))) && !/(occupancy|sqrFoot|price|appartmentName|optionals|availability)/.test(pr)) {
+
+					let filterPr = THAT.matchAreaDataWithFilterProp(pr);
+					if (!uniqueOptions.hasOwnProperty(filterPr)) {
+						uniqueOptions[filterPr] = [];
+					}
+					if (uniqueOptions[filterPr].indexOf(areaData[pr]) === -1 && areaData[pr] != null) {
+						uniqueOptions[filterPr].push(areaData[pr]);
+						inst.filters[filterPr].filterSettings.options.push({ name: areaData[pr], value: areaData[pr], checked: false });
+					}
+				}
+			}
+		}
+		for (let k = 0; k < areasArray.length; k++) {
+			if (areasArray[k].hasOwnProperty('RENDERATOR') && areasArray[k].RENDERATOR.dataEntry) {
+				scanPriceProps(THAT, areasArray[k].RENDERATOR.dataEntry);
+			}
+		}
+	}
+
+	gatherSquareOptions(areasArray) {
+		let THAT = this;
+		let uniqueOptions = {};
+		function scanSquareProps(inst, areaData) {
+			for (let pr in areaData) {
+				if ((inst.filters.hasOwnProperty(pr) || inst.filters.hasOwnProperty(THAT.matchAreaDataWithFilterProp(pr)))
+					&& !/(occupancy|sqrFoot|price|appartmentName|optionals|availability)/.test(pr)) {
+
+					let filterPr = THAT.matchAreaDataWithFilterProp(pr);
+
+					if (!uniqueOptions.hasOwnProperty(filterPr)) {
+						uniqueOptions[filterPr] = [];
+					}
+					if (uniqueOptions[filterPr].indexOf(areaData[pr]) === -1 && areaData[pr] != null) {
+						uniqueOptions[filterPr].push(areaData[pr]);
+						inst.filters[filterPr].filterSettings.options.push({ name: areaData[pr], value: areaData[pr], checked: false });
+					}
+				}
+			}
+		}
+		for (let k = 0; k < areasArray.length; k++) {
+			if (areasArray[k].hasOwnProperty('RENDERATOR') && areasArray[k].RENDERATOR.dataEntry) {
+				scanSquareProps(THAT, areasArray[k].RENDERATOR.dataEntry);
+			}
+		}
+	}
+
 	deactivateFilter(activeFilterObj) {
 		//delete this.actives[activeFilterObj.propName];
-		Vue.delete(this.actives, activeFilterObj.propName)
-		this.clearFilterOptions(activeFilterObj.propName)
+		Vue.delete(this.actives, activeFilterObj.propName);
+		this.clearFilterOptions(activeFilterObj.propName);
 
-		if (activeFilterObj.propName === "price") {
-			this.filters["price"].rangeValue.min = null
-			this.filters["price"].rangeValue.max = null
+		if (activeFilterObj.propName === 'price') {
+			this.filters['price'].rangeValue.min = null;
+			this.filters['price'].rangeValue.max = null;
 		}
-		if (activeFilterObj.propName === "sqrFoot") {
-			this.filters["sqrFoot"].rangeValue.min = null
-			this.filters["sqrFoot"].rangeValue.max = null
+		if (activeFilterObj.propName === 'sqrFoot') {
+			this.filters['sqrFoot'].rangeValue.min = null;
+			this.filters['sqrFoot'].rangeValue.max = null;
 		}
 
-		this.selectFilterOption("areaType", this.filters.areaType.filterValue)
-		this.applyAllFilters(this.filters.areaType.filterValue)
+		this.selectFilterOption('areaType', this.filters.areaType.filterValue);
+		this.applyAllFilters(this.filters.areaType.filterValue);
 	}
-	applyFilter(filterProp) {}
+	applyFilter(filterProp) { }
 
 	appartmentHasFilters() {
 		for (let f in this.filters) {
-			if (f !== "areaType" && f !== "appartmentName") {
-				return true
+			if (f !== 'areaType' && f !== 'appartmentName') {
+				return true;
 			}
 		}
-		return false
+		return false;
 	}
 	isFilterOfAreaType(filterProp, areaType) {
 		let filtersOfAreaType = {
-			appartment: {
-				availability: true,
-				layouts: true,
-				price: true,
-				finishes: true,
-				optionals: true,
-				agent: true,
-				appartmentName: true,
-				orientation: true,
-				areaType: true,
-				sqrFoot: true,
-				occupancy: true
+			'appartment': {
+				'availability': true,
+				'layouts': true,
+				'price': true,
+				'finishes': true,
+				'optionals': true,
+				'agent': true,
+				'appartmentName': true,
+				'orientation': true,
+				'areaType': true,
+				'sqrFoot': true,
+				'occupancy': true
 			},
-			common: {
-				orientation: true,
-				areaType: true
+			'common': {
+				'orientation': true,
+				'price': true,
+				'sqrFoot': true,
+				'areaType': true
 			},
-			commercial: {
-				orientation: true,
-				areaType: true
+			'commercial': {
+				'orientation': true,
+				'price': true,
+				'sqrFoot': true,
+				'areaType': true
 			}
-		}
+		};
 		if (filtersOfAreaType[areaType] && filtersOfAreaType[areaType][filterProp]) {
-			return true
+			return true;
 		}
-		return false
+		return false;
 	}
 	applyAllFilters(areaType) {
-		let THAT = this
-		let activeFilters = {}
+		let THAT = this;
+		let activeFilters = {};
 		for (let filterProp in this.filters) {
-			if (this.isFilterOfAreaType(filterProp, areaType)) {
+			/*  areaType: apartment, commercial, AMENITIES*/
+			if (this.filters[filterProp].visible && this.isFilterOfAreaType(filterProp, areaType)) {
 				/* for dropdowns */
-				this.parseFilterOptions(filterProp, function(option) {
+				this.parseFilterOptions(filterProp, function (option) {
 					if (option.checked === true && !option.dontApplyToSearch) {
-						activeFilters[filterProp] = JSON.parse(JSON.stringify(THAT.filters[filterProp]))
+						activeFilters[filterProp] = JSON.parse(JSON.stringify(THAT.filters[filterProp]));
 					}
-				})
+				});
 				/* for price */
-				if (filterProp === "price" && (this.filters[filterProp].rangeValue.min || this.filters[filterProp].rangeValue.max)) {
-					activeFilters[filterProp] = JSON.parse(JSON.stringify(THAT.filters[filterProp]))
+				if (filterProp === 'price' && (this.filters[filterProp].rangeValue.min || this.filters[filterProp].rangeValue.max)) {
+					activeFilters[filterProp] = JSON.parse(JSON.stringify(THAT.filters[filterProp]));
 				}
 				/* for sqrFoot */
-				if (filterProp === "sqrFoot" && (this.filters[filterProp].rangeValue.min || this.filters[filterProp].rangeValue.max)) {
-					activeFilters[filterProp] = JSON.parse(JSON.stringify(THAT.filters[filterProp]))
+				if (filterProp === 'sqrFoot' && (this.filters[filterProp].rangeValue.min || this.filters[filterProp].rangeValue.max)) {
+					activeFilters[filterProp] = JSON.parse(JSON.stringify(THAT.filters[filterProp]));
 				}
 				/* for occupancy */
-				if (filterProp === "occupancy" && this.filters[filterProp].filterValue) {
-					activeFilters[filterProp] = JSON.parse(JSON.stringify(THAT.filters[filterProp]))
+				if (filterProp === 'occupancy' && (this.filters[filterProp].filterValue)) {
+					activeFilters[filterProp] = JSON.parse(JSON.stringify(THAT.filters[filterProp]));
 				}
 			}
 		}
 
+
 		if (this.onApplyFilters) {
-			this.onApplyFilters(activeFilters)
+			this.onApplyFilters(activeFilters);
 		}
 
-		this.doSearch()
+
+
+		this.doSearch();
 	}
 	resetFilterToDefaults() {
 		for (let f in this.filters) {
-			if (["layouts", "finishes", "agent"].indexOf(f) > -1) {
-				this.selectFilterOption(f, null)
-			} else if (f === "price") {
-				this.filters["price"].rangeValue.min = null
-				this.filters["price"].rangeValue.max = null
-			} else if (f === "sqrFoot") {
-				this.filters["sqrFoot"].rangeValue.min = null
-				this.filters["sqrFoot"].rangeValue.max = null
-			} else if (f === "availability") {
-				this.selectFilterOption("availability", true)
-			} else if (f === "areaType") {
-				this.selectFilterOption("areaType", "appartment")
+			if (['layouts', 'finishes', 'agent'].indexOf(f) > -1) {
+				this.selectFilterOption(f, null);
+			} else if (f === 'price') {
+				this.filters['price'].rangeValue.min = null;
+				this.filters['price'].rangeValue.max = null;
+			} else if (f === 'sqrFoot') {
+				this.filters['sqrFoot'].rangeValue.min = null;
+				this.filters['sqrFoot'].rangeValue.max = null;
+			}
+			else if (f === 'availability') {
+				this.selectFilterOption('availability', true);
+			} else if (f === 'areaType') {
+				// this.selectFilterOption('areaType', 'appartment');
 			}
 		}
 	}
 	clearAllFilters() {
+
 		for (let f in this.filters) {
 			if (this.filters[f].filterSettings.options) {
-				this.clearFilterOptions(f)
+				this.clearFilterOptions(f);
 			}
 			//this.deactivateFilter(this.filters[f]);
 		}
-		this.resetFilterToDefaults()
-		this.clearSearchResults()
+		this.resetFilterToDefaults();
+		this.clearSearchResults();
 		if (this.onClearFilters) {
-			this.onClearFilters()
+			this.onClearFilters();
 		}
+
 	}
 	/* filter options */
 	parseFilterOptions(filterProp, callback) {
 		for (let f = 0; f < this.filters[filterProp].filterSettings.options.length; f++) {
 			if (callback) {
-				callback(this.filters[filterProp].filterSettings.options[f])
+				callback(this.filters[filterProp].filterSettings.options[f]);
 			}
 		}
 	}
 
 	clearFilterOptions(filterProp) {
-		let THAT = this
-		this.parseFilterOptions(filterProp, function(option) {
+
+		let THAT = this;
+		this.parseFilterOptions(filterProp, function (option) {
 			// if (THAT.filters[filterProp].filterValue !== THAT.filters[filterProp].defaultValue) {
-			option.checked = false
+			option.checked = false;
 			// }
-		})
-		this.filters[filterProp].filterValue = this.filters[filterProp].defaultValue || null
+		});
+		this.filters[filterProp].filterValue = this.filters[filterProp].defaultValue || null;
+
 	}
 	noFilterOptionChoosed(filterProp) {
-		let choosedSomething = false
+		let choosedSomething = false;
 		for (let f = 0; f < this.filters[filterProp].filterSettings.options.length; f++) {
-			let option = this.filters[filterProp].filterSettings.options[f]
+			let option = this.filters[filterProp].filterSettings.options[f];
 			if (option.checked == true) {
-				choosedSomething = true
-				return choosedSomething
+				choosedSomething = true;
+				return choosedSomething;
 			}
 		}
-		return choosedSomething
+		return choosedSomething;
 	}
 	selectFilterOption(filterProp, val) {
-		let THAT = this
-		this.clearFilterOptions(filterProp)
-		this.parseFilterOptions(filterProp, function(option) {
+		let THAT = this;
+		this.clearFilterOptions(filterProp);
+		this.parseFilterOptions(filterProp, function (option) {
 			if (option.value === val) {
-				option.checked = true
-				THAT.filters[filterProp].filterValue = val
+				option.checked = true;
+				THAT.filters[filterProp].filterValue = val;
 			}
-		})
+		});
+	}
+	switchFilterSettings(areaType) {
+		this.filters = this.filtersBasedOnAreaType[areaType];
 	}
 	isFilterOptionChecked(filterProp, val) {
 		if (this.filters[filterProp].filterValue === val) {
-			return true
+			return true;
 		} else {
-			return false
+			return false;
 		}
 	}
 	/* dropdowns */
 	toggleFilterDropdown(filterProp) {
-		this.filters[filterProp].dropdown.isOpen = !this.filters[filterProp].dropdown.isOpen
+		this.filters[filterProp].dropdown.isOpen = !this.filters[filterProp].dropdown.isOpen;
 	}
 	openFilterDropdown(filterProp) {
-		this.filters[filterProp].dropdown.isOpen = true
+		this.filters[filterProp].dropdown.isOpen = true;
 	}
 	closeFilterDropdown(filterProp) {
-		this.filters[filterProp].dropdown.isOpen = false
+		this.filters[filterProp].dropdown.isOpen = false;
 	}
 	isFilterDropdownOpen(filterProp) {
 		if (this.filters && this.filters[filterProp] && this.filters[filterProp].dropdown.isOpen) {
-			return true
+			return true;
 		}
-		return false
+		return false;
 	}
+
 }
 
-Vue.component("filter-elevation-header", {
+
+Vue.component('filter-elevation-header', {
+
 	props: ["activefilters", "filterklass"],
 
-	mounted() {},
-	beforeUpdate() {},
-	updated() {},
+	mounted() {
+
+	},
+	beforeUpdate() {
+	},
+	updated() { },
 	methods: {
 		getHTMLfilterTitle(filterObj) {
-			if (!filterObj) {
-				return ""
-			}
-			let propName = filterObj.propName
+			if (!filterObj) { return ''; }
+			let propName = filterObj.propName;
 			let titles = {
-				appartmentName: "property",
-				price: "price",
-				availability: "availability",
-				layouts: "layouts",
-				promotions: "promotion",
-				finishes: "finishes",
-				agent: "agent",
-				sqrFoot: "sqrFeet",
-				occupancy: "occupancy"
-			}
+				'appartmentName': 'property',
+				'price': 'price',
+				'availability': 'availability',
+				'layouts': 'layouts',
+				'promotions': 'promotion',
+				'finishes': 'finishes',
+				'agent': 'agent',
+				'sqrFoot': 'sqrFeet',
+				'occupancy': 'occupancy'
+			};
 			if (propName && titles[propName]) {
-				return titles[propName] + ":"
+				return titles[propName] + ':';
 			} else {
-				return ""
+				return '';
 			}
 		},
 		getHTMLfilterValue(filterObj) {
-			if (!filterObj) {
-				return ""
-			}
-			let propName = filterObj.propName
+			if (!filterObj) { return ''; }
+			let propName = filterObj.propName;
 			if (!propName) {
-				return ""
-			} else if (propName === "sqrFoot") {
-				return "sqrFeet"
-			} else if (propName === "occupancy") {
-				return "occupancy"
-			} else if (propName === "price") {
-				return "price"
+				return '';
+			}
+			else if (propName === 'sqrFoot') {
+				return 'sqrFeet';
+			}
+			else if (propName === 'occupancy') {
+				return 'occupancy';
+			}
+
+
+			else if (propName === 'price') {
+				return 'price';
 				//return 'From ' + filterObj.filterSettings.minValue + '$ To ' + filterObj.filterSettings.maxValue +'$';
-			} else if (propName === "availability") {
-				return filterObj.filterValue === "true" || filterObj.filterValue === true ? "available" : "unavailable"
-			} else if (propName === "areaType") {
+			} else if (propName === 'availability') {
+				return (filterObj.filterValue === 'true' || filterObj.filterValue === true) ? 'available' : 'unavailable';
+			} else if (propName === 'areaType') {
 				let values = {
-					appartment: "residentials",
-					common: "amenities",
-					commercial: "commercials"
-				}
-				return values[filterObj.filterValue]
-			} else if (propName === "appartmentName") {
+					'appartment': 'residentials',
+					'common': 'amenities',
+					'commercial': 'commercials'
+				};
+				return values[filterObj.filterValue];
+			} else if (propName === 'appartmentName') {
 				if (!filterObj.filterValue) {
-					return "NOT SET"
+					return 'NOT SET';
 				} else {
-					return filterObj.filterValue
+					return filterObj.filterValue;
 				}
 			} else {
-				return filterObj.filterValue
+				return filterObj.filterValue;
 			}
 		},
 		deactivateFilter(filterObj) {
-			this.filterklass.deactivateFilter(filterObj)
+			this.filterklass.deactivateFilter(filterObj);
+
 
 			if (!this.activefilters.length) {
-				console.log("activated actives: ", this.activefilters.length)
-				this.filterklass.clearAllFilters()
+				console.log("activated actives: ", this.activefilters.length);
+				this.filterklass.clearAllFilters();
 			}
 		},
 		openFiltersMenu() {
-			this.filterklass.openFiltersMenu()
+			this.filterklass.openFiltersMenu();
 		}
 	},
 	template: `
@@ -706,11 +978,11 @@ Vue.component("filter-elevation-header", {
 	    v-on:click="openFiltersMenu()"
 	    style="font-size: 1.3rem;
         __line-height: 1.5;
-	    "><span class="m-auto filter-btn noselect">Start here ></span></div>
+	    "><span class="m-auto filter-btn">Start here ></span></div>
 	</div> 
   </div>
   `
-})
+});
 
 
 

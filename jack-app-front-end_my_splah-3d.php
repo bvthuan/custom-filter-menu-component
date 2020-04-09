@@ -52,6 +52,9 @@
 	<link href="libs/colorpicker/bootstrap-colorpicker.min.css" rel="stylesheet">
 	<link href="css/front-end/customization-bar.css" rel="stylesheet">
 
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-slider-component@latest/theme/default.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue-slider-component@latest/dist/vue-slider-component.umd.min.js"></script>
+
 
 	<script src="js/front-end/vue-components/spinner-component.js"></script>
 	<script src="js/front-end/vue-components/elevation-filters-component.js"></script>
@@ -776,11 +779,22 @@
 			background-color: #ffffff;
 		}
 
+		.filter-menu-component ::-webkit-scrollbar {
+			/* width: 0px;  
+			background: transparent;   */
+		}
+
+		.overflow-x-scroll{
+			overflow-x: auto;
+			overflow-y: hidden;
+		}
+
 
 		.filter-menu-component {
 			height: 100%;
+			width: 30%;
 			position: absolute;
-			background: white;
+			background: #FAFAF9;
 			top: 0px;
 			right: 0;
 			left: auto;
@@ -803,10 +817,9 @@
 
 
 		.filter-section-header {
-			height: 5%;
+			height: 50px;
 			color: #ffffff;
 			background-color: rgb(125, 71, 217);
-			min-height: 40px;
 			transition: width 2s;
 		}
 
@@ -826,12 +839,14 @@
 
 
 		.filter {
-			border-bottom: 1px solid gray;
+			/* border-bottom: 1px solid gray; */
 		}
 
 		.filter-section-body {
-			height: 85%;
+			height: calc(100% - 50px - 50px - 63px);
+			position: relative;
 			overflow-y: auto;
+			overflow-x: hidden;
 		}
 
 		.filter-section-body .filter-types {
@@ -859,7 +874,8 @@
 		}
 
 		.filter-section-body .filter {
-			padding: 15px;
+			padding-bottom: 15px;
+			padding-left: 15px;
 		}
 
 		.filter-section-body .filter .filter-label {
@@ -937,31 +953,30 @@
 			border-bottom: 1px solid black;
 		}
 
-		.filter-section-body {
-			padding-bottom: 70px;
-		}
-
 		.filter-section-footer {
-			height: 10%;
+			height: 63px;
 			background: #c3c3c3;
-			min-height: 63px;
 			position: absolute;
 			width: 100%;
 			bottom: 0;
 			top: auto;
 		}
 
-		.filter-section-footer .actions {
-			text-align: right;
-			padding: 15px;
-			padding-bottom: 0px;
-			/*font-size: 18px;*/
-			font-size: 1.4em;
+		.filter-section-actions{
+			height: 50px
 		}
 
-		.filter-section-footer .actions span {
-			padding-right: 15px;
-			cursor: pointer;
+		.filter-section-actions .actions button{
+			/* text-align: right;
+			padding: 15px;
+			padding-bottom: 0px;
+		
+			font-size: 1.4em !important; */
+		}
+
+		.filter-section-actions .actions span {
+			/* padding-right: 15px;*/
+			cursor: pointer; 
 		}
 
 		/* cardinals */
@@ -2327,6 +2342,18 @@
 							setTimeout(function() {
 								$('.filter-section-header').css('background-color', LOADED_MODEL.preferences.colors.primaryColor);
 								$('.message-sent-confirm-color').css('background-color', LOADED_MODEL.preferences.colors.primaryColor);
+
+								var sheet = window.document.styleSheets[0];
+								
+								var cssRules = ['.filter-menu-item-selected  { color: PRIMARY_COLOR !important; border-color:  PRIMARY_COLOR !important; font-weight: bold}',
+									'.primary-background-color {background-color:  PRIMARY_COLOR !important} ',
+									'.vue-slider-process {background-color:  PRIMARY_COLOR !important} ',
+									'.vue-slider-dot-tooltip-text { color:  PRIMARY_COLOR !important } ',
+									'.filter-types .custom-checkbox .custom-control-input:disabled~.custom-control-label::before { background-color: PRIMARY_COLOR !important}'];
+
+								cssRules.forEach(rule => {
+									sheet.insertRule(rule.replace(/PRIMARY_COLOR/g, LOADED_MODEL.preferences.colors.primaryColor), sheet.cssRules.length);
+								});
 
 
 								var toolbox = $('.renderator-canvas-window-view'),
