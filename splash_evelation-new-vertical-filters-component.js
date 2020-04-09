@@ -1434,7 +1434,7 @@ Vue.component('filter-menu-component', {
 
 				<div class="pt-4 pb-4 pl-4 pr-5">
 					<vue-slider :min="squareRange.min" :max="squareRange.max" :marks="squareMarker" 
-						:tooltip-formatter="squareFormatter" 
+						:tooltip-formatter="squareFormatter" silent="true" 
 						v-model="squareSlider" :dot-options="dotOptions"></vue-slider>
 				</div>
 				<div class="filter-separator"></div>
@@ -1492,7 +1492,7 @@ Vue.component('filter-menu-component', {
 
 				</div>
 				<div class="pt-4 pb-4 pl-4 pr-5">
-					<vue-slider :min="priceRange.min" :max="priceRange.max" 
+					<vue-slider :min="priceRange.min" :max="priceRange.max" silent="true" 
 						:tooltip-formatter="priceFormatter" 
 						:marks="priceMarker" v-model="priceSlider"
 						:dot-options="dotOptions"></vue-slider>
