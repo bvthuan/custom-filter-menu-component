@@ -171,7 +171,7 @@ class FrontEnd {
 
 			let img = $("<img />")
 				.attr("src", splashBGURL)
-				.on("load", function() {
+				.on("load", function () {
 					if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0) {
 						loadingCounter--
 						checkSuccess()
@@ -180,7 +180,7 @@ class FrontEnd {
 						checkSuccess()
 					}
 				})
-				.on("error", function() {
+				.on("error", function () {
 					loadingCounter--
 				})
 		}
@@ -194,7 +194,7 @@ class FrontEnd {
 
 			let img = $("<img />")
 				.attr("src", logoURL)
-				.on("load", function() {
+				.on("load", function () {
 					if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0) {
 						loadingCounter--
 						checkSuccess()
@@ -217,7 +217,7 @@ class FrontEnd {
 						checkSuccess()
 					}
 				})
-				.on("error", function() {
+				.on("error", function () {
 					loadingCounter--
 				})
 		} else {
@@ -282,18 +282,18 @@ class FrontEnd {
 		let Model = this.Model
 		let buildingInfoDOM = this.DOM_selectors.buildingInfo
 		THAT.VUE_COMPONENTS.buildingInfo = {}
-		$(buildingInfoDOM).each(function(k, elem) {
+		$(buildingInfoDOM).each(function (k, elem) {
 			THAT.VUE_COMPONENTS.buildingInfo = new Vue({
 				//el: buildingInfoDOM,
 				el: elem,
-				data: function() {
+				data: function () {
 					return { data: Model }
 				}
 			})
 		})
 		THAT.VUE_COMPONENTS.buildingInfo["splash"] = new Vue({
 			el: $(THAT.DOM_selectors.splashPopUp)[0],
-			data: function() {
+			data: function () {
 				return { data: Model }
 			}
 		})
@@ -365,7 +365,7 @@ class FrontEnd {
 		this.Model.elevations[elevationName].filters.areaType.filterSettings.filterResults = []
 	}
 	showDefaultSlogans() {
-		;(this.areaMedia.areaType = null),
+		; (this.areaMedia.areaType = null),
 			(this.areaMedia.floorPlan = null),
 			(this.areaMedia.renderGallery = null),
 			(this.areaMedia.virtualTour = null),
@@ -385,7 +385,7 @@ class FrontEnd {
 		let elevationKlassInst = new ElevationKlass()
 
 		/* attach events now */
-		elevationKlassInst.onMouseOverArea = function(fabricObj) {
+		elevationKlassInst.onMouseOverArea = function (fabricObj) {
 			if (THAT.Model.elevations[elevationName].activeAreaData) {
 				return
 			}
@@ -397,24 +397,24 @@ class FrontEnd {
 				}
 			}
 		}
-		elevationKlassInst.onMouseNoArea = function() {
+		elevationKlassInst.onMouseNoArea = function () {
 			if (THAT.Model.elevations[elevationName].activeAreaData) {
 				return
 			}
 			THAT.showDefaultSlogans()
 		}
 
-		THAT.activateCanvasObject = function(fabricObj) {
+		THAT.activateCanvasObject = function (fabricObj) {
 			elevationKlassInst.onClickOverArea(fabricObj)
 		}
-		elevationKlassInst.onClickOverArea = function(fabricObj) {
+		elevationKlassInst.onClickOverArea = function (fabricObj) {
 			if (!fabricObj || !fabricObj.RENDERATOR) {
 				return
 			}
 			THAT.activateElevationArea(elevationName, fabricObj)
 		}
 
-		elevationKlassInst.onClearSelection = function() {
+		elevationKlassInst.onClearSelection = function () {
 			THAT.Model.elevations[elevationName].activeAreaData = null
 			THAT.deActivateAreaMedia()
 			THAT.VUE_COMPONENTS[elevationName].appartment.$forceUpdate()
@@ -423,8 +423,8 @@ class FrontEnd {
 			elevationKlassInst.onMouseNoArea()
 		}
 
-		this.elevationFilterKlasses[elevationName].onClearSearchResults = function(filters, results) {
-			elevationKlassInst.parseCanvasAreas(function(fabricObj) {
+		this.elevationFilterKlasses[elevationName].onClearSearchResults = function (filters, results) {
+			elevationKlassInst.parseCanvasAreas(function (fabricObj) {
 				fabricObj.lastSearch = null
 			})
 			THAT.elevationKlasses[elevationName].updateAllAreasEvents({})
@@ -432,10 +432,10 @@ class FrontEnd {
 			THAT.elevationKlasses[elevationName].amenitiesFound.filterResults.splice(0, THAT.elevationKlasses[elevationName].amenitiesFound.filterResults.length)
 		}
 
-		this.elevationFilterKlasses[elevationName].onDidSearch = function(filters, results) {
+		this.elevationFilterKlasses[elevationName].onDidSearch = function (filters, results) {
 			/* loop canvas objects and math UNIQUE_ID of each result with canvas.RENDERATOR.UNIQUE_ID */
 			elevationKlassInst.canvas.discardActiveObject()
-			elevationKlassInst.parseCanvasAreas(function(fabricObj) {
+			elevationKlassInst.parseCanvasAreas(function (fabricObj) {
 				if (!fabricObj.lastSearch) {
 					fabricObj.lastSearch = {}
 				}
@@ -463,27 +463,27 @@ class FrontEnd {
 			THAT.searchResult = results
 			THAT.loading_spinner.removeClass("d-none")
 
-			setTimeout(function() {
+			setTimeout(function () {
 				THAT.searchEnable = true
 				THAT.searchFlag = true
 			}, 50)
 		}
 
-		this.elevationFilterKlasses[elevationName].onClearFilters = function() {
+		this.elevationFilterKlasses[elevationName].onClearFilters = function () {
 			console.log("filer cleared!")
 
-			setTimeout(function() {
+			setTimeout(function () {
 				THAT.searchFlag = false
 				window.deselectRoom = true
 			}, 150)
 		}
 
-		this.elevationFilterKlasses[elevationName].onFiltersMenuOpen = function() {
+		this.elevationFilterKlasses[elevationName].onFiltersMenuOpen = function () {
 			elevationKlassInst.canvas.discardActiveObject()
 		}
 
-		this.elevationFilterKlasses[elevationName].onBeforeSearchAsynch = function() {
-			THAT.crmUpdateElevationAreasFromCRM(elevationName, function() {
+		this.elevationFilterKlasses[elevationName].onBeforeSearchAsynch = function () {
+			THAT.crmUpdateElevationAreasFromCRM(elevationName, function () {
 				THAT.elevationFilterKlasses["north"].doSearch()
 			})
 		}
@@ -502,7 +502,7 @@ class FrontEnd {
 				data: THAT.Model.elevations[elevationName],
 				watch: {
 					active: {
-						handler: function(val, oldVal) {
+						handler: function (val, oldVal) {
 							if (val === true) {
 								$(".elevation-canvas").removeClass("active")
 								// THAT.Model.elevations[elevationName].elevationCanvas.trigger('selection:cleared');
@@ -524,7 +524,7 @@ class FrontEnd {
 			}),
 			amenities: new Vue({
 				el: elevationDiv.find(".amenities-component")[0],
-				data: function() {
+				data: function () {
 					return {
 						filterSettings: THAT.elevationKlasses[elevationName].amenitiesFound
 					}
@@ -559,7 +559,7 @@ class FrontEnd {
 			//   THAT.Model.elevations[elevationName].elevationCanvas.setWidth(FAKE_RESPONSE.backgroundImage.width);
 			//   THAT.Model.elevations[elevationName].elevationCanvas.setHeight(FAKE_RESPONSE.backgroundImage.height);
 			//   THAT.elevationKlasses[elevationName].responsiveElevationCanvas(THAT.Model.elevations[elevationName].elevationCanvas);
-			THAT.Model.elevations[elevationName].elevationCanvas.loadFromJSON(FAKE_RESPONSE, function() {
+			THAT.Model.elevations[elevationName].elevationCanvas.loadFromJSON(FAKE_RESPONSE, function () {
 				// THAT.elevationKlasses[elevationName].lockCanvasAreas(canvas);
 				// THAT.elevationKlasses[elevationName].zoomBasedOnBackgroundSize(canvas, THAT.Model.elevations[elevationName]);
 				THAT.elevationKlasses[elevationName].initElevationDeviceEvents(THAT.Model.elevations[elevationName].elevationCanvas)
@@ -587,7 +587,7 @@ class FrontEnd {
 				if (elevationName == "north") {
 					let babylonCanvas = document.getElementById("renderator-canvas-north-mine")
 
-					setTimeout(function() {
+					setTimeout(function () {
 						THAT.initBabyLonCanvas(babylonCanvas)
 						THAT.crmUpdateElevationAreasFromCRM(elevationName)
 					}, 7000)
@@ -609,11 +609,11 @@ class FrontEnd {
 			url: "php/get_elevation_canvas-3d.php" + queryStr,
 			dataType: "json",
 			method: "GET",
-			success: function(response) {
+			success: function (response) {
 				let canvas = THAT.Model.elevations[elevationName].elevationCanvas
 
 				canvas.wrapperEl.style.visibility = "hidden"
-				THAT.setElevationBackground(elevationName, function(canvas) {
+				THAT.setElevationBackground(elevationName, function (canvas) {
 					THAT.elevationKlasses[elevationName].initElevationDeviceEvents(THAT.Model.elevations[elevationName].elevationCanvas)
 					let jsonObjects = []
 					let localData = []
@@ -643,8 +643,8 @@ class FrontEnd {
 						THAT.elevationFilterKlasses[currentActive].filters["layouts"].dropdown.isOpen = true
 					}
 
-					setTimeout(function() {
-						$(".filter-menu-component").each(function(k, ele) {
+					setTimeout(function () {
+						$(".filter-menu-component").each(function (k, ele) {
 							let eleW = $(ele).width()
 							if (eleW > 0 && currentActive && currentActive !== elevationName) {
 								if (!elevationDiv.find(".filter-menu-component").hasClass("filter-menu-closed")) {
@@ -664,14 +664,14 @@ class FrontEnd {
 
 					if (elevationName == "north") {
 						let babylonCanvas = document.getElementById("renderator-canvas-north-mine")
-						setTimeout(function() {
+						setTimeout(function () {
 							THAT.initBabyLonCanvas(babylonCanvas)
 							THAT.crmUpdateElevationAreasFromCRM(elevationName)
 						}, 7000)
 					}
 				})
 			},
-			error: function(e, y) {
+			error: function (e, y) {
 				spinner.addClass("d-none")
 			}
 		})
@@ -705,7 +705,7 @@ class FrontEnd {
 
 		THAT.activateAreaMedia(fabricObj.RENDERATOR.dataEntry)
 
-		let trackAndRender = function() {
+		let trackAndRender = function () {
 			/* google analytics start */
 			if (ga) {
 				if (fabricObj.RENDERATOR.dataEntry.areaType === "appartment") {
@@ -726,7 +726,7 @@ class FrontEnd {
 				{
 					renderatorDataEntry: fabricObj.RENDERATOR.dataEntry
 				},
-				function() {
+				function () {
 					trackAndRender()
 				}
 			)
@@ -741,7 +741,7 @@ class FrontEnd {
 			"?filename=" + Model.elevations[elevationName].fileName + "&elevation=" + elevationName + "&building_id=" + Model.building_id + "&" + globalQueryString.substring(1)
 		let fetchBackground = "php/get_3d_elevation_image.php" + imgQueryStr
 		let canvas = this.Model.elevations[elevationName].elevationCanvas
-		canvas.setBackgroundImage(fetchBackground, function(bgLoaded) {
+		canvas.setBackgroundImage(fetchBackground, function (bgLoaded) {
 			canvas.setWidth(screen.availWidth)
 			canvas.setHeight(screen.availHeight)
 			if (bgReady) {
@@ -752,11 +752,11 @@ class FrontEnd {
 	}
 
 	initElevationEvents() {
-		this.attachActionEvent("onAreaSelect", function(fabricObj) {})
-		this.attachActionEvent("onAreaMouseOver", function(fabricObj) {})
-		this.attachActionEvent("onAreaMouseOut", function(fabricObj) {})
-		this.attachActionEvent("onLoadElevation", function(elevationModel) {})
-		this.attachActionEvent("onLoadAllElevations", function(THAT) {})
+		this.attachActionEvent("onAreaSelect", function (fabricObj) { })
+		this.attachActionEvent("onAreaMouseOver", function (fabricObj) { })
+		this.attachActionEvent("onAreaMouseOut", function (fabricObj) { })
+		this.attachActionEvent("onLoadElevation", function (elevationModel) { })
+		this.attachActionEvent("onLoadAllElevations", function (THAT) { })
 	}
 
 	chooseFrameSlogan(frameName, sloganType) {
@@ -923,11 +923,11 @@ class FrontEnd {
 					`
 			<div class="carousel-item">
                 <img class="d-none" src="` +
-						imagePath +
-						`" alt=''>			
+					imagePath +
+					`" alt=''>			
 				<div class="background-image-slide" style="background-image:url(` +
-						imagePath +
-						`);" alt=''  ondblclick="frontEndScreenResizer('floor-plan', 'expand')"></div>
+					imagePath +
+					`);" alt=''  ondblclick="frontEndScreenResizer('floor-plan', 'expand')"></div>
 			</div>`
 				)
 				carouselInner.append(item)
@@ -941,11 +941,11 @@ class FrontEnd {
 				`
 			<div class="carousel-item">
 				<img class="d-none" src="` +
-					areaData.floorPlan.url +
-					`" alt=''>
+				areaData.floorPlan.url +
+				`" alt=''>
 				<div class="background-image-slide" style="background-image:url(` +
-					areaData.floorPlan.url +
-					`);" alt=''   ondblclick="frontEndScreenResizer('floor-plan', 'expand')"></div>
+				areaData.floorPlan.url +
+				`);" alt=''   ondblclick="frontEndScreenResizer('floor-plan', 'expand')"></div>
 			</div>`
 			)
 			carouselInner.append(item)
@@ -975,7 +975,7 @@ class FrontEnd {
 		iframeDom.removeClass("d-none")
 		mediaWindow.find(".spinner-cont").removeClass("d-none")
 		iframe[0].src = areaData.virtualTour
-		iframe[0].onload = function() {
+		iframe[0].onload = function () {
 			mediaWindow.find(".spinner-cont").addClass("d-none")
 		}
 		mediaWindow.find(".window-media-placeholder").addClass("d-none")
@@ -1011,11 +1011,11 @@ class FrontEnd {
 					`
 			<div class="carousel-item">
 				<img class="d-none"  src="` +
-						imagePath +
-						`" alt=''>
+					imagePath +
+					`" alt=''>
 				<div class="background-image-slide" style="background-image:url(` +
-						imagePath +
-						`);" alt=''></div>
+					imagePath +
+					`);" alt=''></div>
 			</div>`
 				)
 
@@ -1032,11 +1032,11 @@ class FrontEnd {
 					`
 			<div class="carousel-item">
 				<img class="d-none"  src="` +
-						splitURLs[f].trim() +
-						`" alt=''>
+					splitURLs[f].trim() +
+					`" alt=''>
 				<div class="background-image-slide" style="background-image:url(` +
-						splitURLs[f].trim() +
-						`);" alt=''></div>
+					splitURLs[f].trim() +
+					`);" alt=''></div>
 			</div>`
 				)
 				carouselInner.append(item)
@@ -1135,7 +1135,7 @@ class FrontEnd {
 			el.parentNode.style.overflow = ""
 		}
 
-		hammertime.on("pan", function(ev) {
+		hammertime.on("pan", function (ev) {
 			$(el).data("hammerRealTimeTransform").translate.x = $(el).data("hammerOriginalTransform").translate.x + ev.deltaX
 			$(el).data("hammerRealTimeTransform").translate.y = $(el).data("hammerOriginalTransform").translate.y + ev.deltaY
 
@@ -1151,13 +1151,13 @@ class FrontEnd {
 			el.style.mozTransform = transformVal
 			el.style.transform = transformVal
 		})
-		
-		hammertime.on("panend", function(ev) {
+
+		hammertime.on("panend", function (ev) {
 			$(el).data("hammerOriginalTransform").translate.x = $(el).data("hammerRealTimeTransform").translate.x
 			$(el).data("hammerOriginalTransform").translate.y = $(el).data("hammerRealTimeTransform").translate.y
 		})
 
-		hammertime.on("pinch", function(ev) {
+		hammertime.on("pinch", function (ev) {
 			$(el).data("hammerRealTimeTransform").scale = $(el).data("hammerOriginalTransform").scale * ev.scale
 			// el.style.height = $(el).data('hammerOriginalTransform').scale * ev.scale * 100 + '%';
 			let transformVal =
@@ -1173,12 +1173,12 @@ class FrontEnd {
 			el.style.transform = transformVal
 		})
 
-		hammertime.on("pinchend", function(ev) {
+		hammertime.on("pinchend", function (ev) {
 			$(el).data("hammerOriginalTransform").scale = $(el).data("hammerRealTimeTransform").scale
 		})
 	}
 	destroyMediaGustures(elOrEls) {
-		let destroyHammer = function(el) {
+		let destroyHammer = function (el) {
 			if ($(el).data("hammerInstance") && $(el).data("hammerInstance").destroy) {
 				$(el)
 					.data("hammerInstance")
@@ -1186,7 +1186,7 @@ class FrontEnd {
 			}
 		}
 		if ($.isArray(elOrEls)) {
-			elOrEls.each(function(index) {
+			elOrEls.each(function (index) {
 				destroyHammer(this)
 			})
 		} else {
@@ -1198,8 +1198,8 @@ class FrontEnd {
 		$.ajax({
 			url: "php/visit_suites.php" + globalQueryString + "&&suites=" + suites,
 			method: "GET",
-			success: function(response) {},
-			error: function(e, y) {}
+			success: function (response) { },
+			error: function (e, y) { }
 		})
 	}
 
@@ -1211,10 +1211,10 @@ class FrontEnd {
 			var match = str.match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d(?:\.\d?))\))?/)
 			return match
 				? {
-						red: match[1],
-						green: match[2],
-						blue: match[3]
-				  }
+					red: match[1],
+					green: match[2],
+					blue: match[3]
+				}
 				: {}
 		}
 
@@ -1225,7 +1225,7 @@ class FrontEnd {
 			return
 		}
 
-		let delayCreateScene = function(engine) {
+		let delayCreateScene = function (engine) {
 			// Model by Mixamo
 			engine.enableOfflineSupport = false
 			BABYLON.Animation.AllowMatricesInterpolation = true
@@ -1273,13 +1273,13 @@ class FrontEnd {
 
 			let babylonAssetManager = new BABYLON.AssetsManager(scene)
 
-			babylonAssetManager.onTaskError = function(task) {}
+			babylonAssetManager.onTaskError = function (task) { }
 
 			let presFlag = false
 			let targetAngle = 0.0
 			let presAngleVelocity = 0.0
 
-			babylonAssetManager.onFinish = function(tasks) {
+			babylonAssetManager.onFinish = function (tasks) {
 				update_loading(100)
 				$("#loading").hide()
 
@@ -1289,7 +1289,7 @@ class FrontEnd {
 					}
 				})
 
-				$("#origin_point").click(function() {
+				$("#origin_point").click(function () {
 					go_origin()
 				})
 			}
@@ -1338,14 +1338,14 @@ class FrontEnd {
 
 			let body_texture1_process = babylonAssetManager.addTextureTask("body_texture1", "data/" + token + "/textures/body/BODY_1_Beauty.jpg")
 
-			body_texture1_process.onSuccess = function(task) {
+			body_texture1_process.onSuccess = function (task) {
 				body_texture1 = task.texture
 				body_texture1.uAng = Math.PI
 				update_loading(2)
 			}
 
 			let body_texture2_process = babylonAssetManager.addTextureTask("body_texture2", "data/" + token + "/textures/body/BODY_2_Beauty.jpg")
-			body_texture2_process.onSuccess = function(task) {
+			body_texture2_process.onSuccess = function (task) {
 				body_texture2 = task.texture
 				body_texture2.uAng = Math.PI
 				update_loading(2)
@@ -1381,14 +1381,14 @@ class FrontEnd {
 				cameraTarget = initialCameraPoint
 				selectedTagName = ""
 				camera.lowerRadiusLimit = settingVal.lowerRadiusLimit
-				Object.keys(balconyArray).map(function(item_key) {
+				Object.keys(balconyArray).map(function (item_key) {
 					targetTransArray[item_key] = 1.0
 				})
 			}
 
 			let glbTask = babylonAssetManager.addMeshTask("glbTask", "", "data/" + token + "/textures/", settingVal.model)
 
-			glbTask.onSuccess = function(task) {
+			glbTask.onSuccess = function (task) {
 				update_loading(3)
 				let newMeshes = task.loadedMeshes
 				for (let index = 0; index < newMeshes.length; index++) {
@@ -1446,7 +1446,7 @@ class FrontEnd {
 				const grass_1 = scene.getMaterialByName("grass_1")
 				grass_1.albedoTexture.level = 3
 
-				let firstBuildingRound = setInterval(function() {
+				let firstBuildingRound = setInterval(function () {
 					if (presAngleVelocity < 0.02 && currentCameraPostion > targetAngle) presAngleVelocity += 0.001
 					else if (presAngleVelocity > 0.0 && currentCameraPostion < targetAngle) {
 						presAngleVelocity -= 0.001
@@ -1454,7 +1454,7 @@ class FrontEnd {
 				}, 10)
 				// turn_arround();
 
-				setInterval(function() {
+				setInterval(function () {
 					if (Math.abs(currentCameraPostion - targetAngle) < 0.2 && firstBuildingRound) {
 						// console.log("clear interval : ", currentCameraPostion, targetAngle);
 						presFlag = false
@@ -1469,7 +1469,7 @@ class FrontEnd {
 				babylonAssetManager.load()
 			}, 100)
 
-			scene.registerBeforeRender(function() {
+			scene.registerBeforeRender(function () {
 				let ratio = Math.atan((camera.position.z - cameraY) / (camera.position.x - cameraX))
 				ratio -= Math.PI / 3
 				settingVal.cameraAngle = 10
@@ -1501,7 +1501,7 @@ class FrontEnd {
 							myMaterial.emissiveColor = new BABYLON.Color3(0.00, 0.18, 0.00)
 							myMaterial.environmentIntensity = 0.1
 							myMaterial.alpha = 0.8
-							
+
 
 
 							if (THAT.tileData[item_name]) {
@@ -1545,7 +1545,7 @@ class FrontEnd {
 			let fadeTime = 0
 			let fadeStart = false
 
-			scene.onBeforeRenderObservable.add(function() {
+			scene.onBeforeRenderObservable.add(function () {
 				var radius = cameraRadius()
 
 				if (radius > settingVal.zoomRange) {
@@ -1665,12 +1665,12 @@ class FrontEnd {
 			let clickedMesh = []
 
 			// scroll up and down event handling
-			let cameraRadius = function() {
+			let cameraRadius = function () {
 				let r = Math.sqrt(camera.position.x * camera.position.x + camera.position.z * camera.position.z)
 				return r
 			}
 
-			let updateCameraPoint = function(deltaY) {
+			let updateCameraPoint = function (deltaY) {
 				let newY = initialY + deltaY / 30
 				// if(Math.abs(newY - cameraTagetCenter) > moveableLimit ) return;
 				if (newY > settingVal.bottomLimit && newY < settingVal.topLimit) {
@@ -1679,7 +1679,7 @@ class FrontEnd {
 				}
 			}
 
-			let onPointerDown = function(evt) {
+			let onPointerDown = function (evt) {
 				mouseClicked = true
 				startY = evt.y
 				initialY = camera.target.y
@@ -1697,7 +1697,7 @@ class FrontEnd {
 				blurHorizontalSize: 0.1
 			})
 
-			var onPointerMove = function(evt) {
+			var onPointerMove = function (evt) {
 				let currentCameraRadius = cameraRadius()
 
 				if (currentCameraRadius < settingVal.zoomRange) {
@@ -1717,7 +1717,7 @@ class FrontEnd {
 			})
 			let mesh_str = []
 
-			let onPointerUp = function(evt) {
+			let onPointerUp = function (evt) {
 				window.model_rotate = false
 				window.model_click = false
 				window.model_zoom = false
@@ -1733,7 +1733,7 @@ class FrontEnd {
 				let selected_balkony = ""
 
 				for (let i = 0; i < 5; i++) {
-					pickInfo = scene.pick(scene.pointerX + tolerence * Math.cos((0.3 * Math.PI * i) / 5), scene.pointerY + tolerence * Math.sin((0.3 * Math.PI * i) / 5), function(mesh) {
+					pickInfo = scene.pick(scene.pointerX + tolerence * Math.cos((0.3 * Math.PI * i) / 5), scene.pointerY + tolerence * Math.sin((0.3 * Math.PI * i) / 5), function (mesh) {
 						return mesh !== []
 					})
 					p_mesh = pickInfo.pickedMesh
@@ -1820,141 +1820,141 @@ class FrontEnd {
 				}
 			}
 
-            let clearPreviousHoveredSelection = function () {
-                if (THAT.previousHoveredEntryIndex < 0) {
-                    return;
-                }
+			let clearPreviousHoveredSelection = function () {
+				if (THAT.previousHoveredEntryIndex < 0) {
+					return;
+				}
 
-                if (THAT.Model.elevations["north"].activeAreaData) {
+				if (THAT.Model.elevations["north"].activeAreaData) {
 
-                    let selectedMeshName = THAT.Model.elevations["north"].activeAreaData.mesh_name;
+					let selectedMeshName = THAT.Model.elevations["north"].activeAreaData.mesh_name;
 
-                    if (!meshes[THAT.previousHoveredEntryIndex].name.includes("glasses_" + selectedMeshName)) {
-                        meshes[THAT.previousHoveredEntryIndex].material = meshe_materials[THAT.previousHoveredEntryIndex]
-                    }
-                    
-                } else {
-                    meshes[THAT.previousHoveredEntryIndex].material = meshe_materials[THAT.previousHoveredEntryIndex]
-                }
-            }
+					if (!meshes[THAT.previousHoveredEntryIndex].name.includes("glasses_" + selectedMeshName)) {
+						meshes[THAT.previousHoveredEntryIndex].material = meshe_materials[THAT.previousHoveredEntryIndex]
+					}
 
-            let onMouseMove = function (evt) {
-                if (THAT.searchFlag) return;
+				} else {
+					meshes[THAT.previousHoveredEntryIndex].material = meshe_materials[THAT.previousHoveredEntryIndex]
+				}
+			}
 
-                let p_mesh = []
-                let tolerence = 1
-                let isMesh = false
-                let pickInfo = []
-                let selected_balkony = ""
-                let meshAreaHovered = false;
+			let onMouseMove = function (evt) {
+				if (THAT.searchFlag) return;
 
-                for (let i = 0; i < 5; i++) {
-                    pickInfo = scene.pick(scene.pointerX + tolerence * Math.cos((0.3 * Math.PI * i) / 5),
-                        scene.pointerY + tolerence * Math.sin((0.3 * Math.PI * i) / 5),
-                        function (mesh) {
-                            return mesh !== []
-                        })
-                    p_mesh = pickInfo.pickedMesh
-                    if (p_mesh == undefined) {
-                        continue
-                    }
+				let p_mesh = []
+				let tolerence = 1
+				let isMesh = false
+				let pickInfo = []
+				let selected_balkony = ""
+				let meshAreaHovered = false;
 
-                    meshAreaHovered = true;
+				for (let i = 0; i < 5; i++) {
+					pickInfo = scene.pick(scene.pointerX + tolerence * Math.cos((0.3 * Math.PI * i) / 5),
+						scene.pointerY + tolerence * Math.sin((0.3 * Math.PI * i) / 5),
+						function (mesh) {
+							return mesh !== []
+						})
+					p_mesh = pickInfo.pickedMesh
+					if (p_mesh == undefined) {
+						continue
+					}
 
-                    if (pickInfo.hit && (pickInfo.pickedMesh.name.substr(0, 7) == "glasses" ||
-                        pickInfo.pickedMesh.name.substr(-5) == "coridor" ||
-                        pickInfo.pickedMesh.name.substr(-13) == "balkony_glass")) {
-                        isMesh = true
-                        mesh_str = p_mesh.name.split("_")
+					meshAreaHovered = true;
 
-                        if (pickInfo.pickedMesh.name.substr(0, 7) == "glasses") {
-                            selected_balkony = mesh_str[1]
-                        } else if (pickInfo.pickedMesh.name.substr(-5) == "walls") {
-                            selected_balkony = p_mesh.name.substr(0, p_mesh.name.length - 6)
-                        } else if (pickInfo.pickedMesh.name.substr(-13) == "balkony_glass") {
-                            selected_balkony = p_mesh.name.substr(0, p_mesh.name.length - 14)
-                        } else {
-                        }
+					if (pickInfo.hit && (pickInfo.pickedMesh.name.substr(0, 7) == "glasses" ||
+						pickInfo.pickedMesh.name.substr(-5) == "coridor" ||
+						pickInfo.pickedMesh.name.substr(-13) == "balkony_glass")) {
+						isMesh = true
+						mesh_str = p_mesh.name.split("_")
 
-                        break
-                    } else {
-                    }
-                }
+						if (pickInfo.pickedMesh.name.substr(0, 7) == "glasses") {
+							selected_balkony = mesh_str[1]
+						} else if (pickInfo.pickedMesh.name.substr(-5) == "walls") {
+							selected_balkony = p_mesh.name.substr(0, p_mesh.name.length - 6)
+						} else if (pickInfo.pickedMesh.name.substr(-13) == "balkony_glass") {
+							selected_balkony = p_mesh.name.substr(0, p_mesh.name.length - 14)
+						} else {
+						}
 
-                if (!meshAreaHovered) {
-                    clearPreviousHoveredSelection()
-                    THAT.previousHoveredEntryIndex = -1
-                    THAT.previousHoveredEntry = null
-                    return;
-                }
+						break
+					} else {
+					}
+				}
 
-                if (THAT.previousHoveredEntry == selected_balkony) {
-                    return
-                }
+				if (!meshAreaHovered) {
+					clearPreviousHoveredSelection()
+					THAT.previousHoveredEntryIndex = -1
+					THAT.previousHoveredEntry = null
+					return;
+				}
 
-                if (isMesh) {
-                } else {
-                    return
-                }
+				if (THAT.previousHoveredEntry == selected_balkony) {
+					return
+				}
 
-                if (THAT.Model.elevations["north"].activeAreaData) {
-                    let selectedMeshName = THAT.Model.elevations["north"].activeAreaData.mesh_name;
+				if (isMesh) {
+				} else {
+					return
+				}
 
-                    if (selected_balkony == selectedMeshName) {
-                        return
-                    }
-                }
+				if (THAT.Model.elevations["north"].activeAreaData) {
+					let selectedMeshName = THAT.Model.elevations["north"].activeAreaData.mesh_name;
 
-                let highLightWindow = "glasses_" + selected_balkony
-                let selectedEntryIndex = -1;
+					if (selected_balkony == selectedMeshName) {
+						return
+					}
+				}
 
-                for (let index = 0; index < meshes.length; index++) {
+				let highLightWindow = "glasses_" + selected_balkony
+				let selectedEntryIndex = -1;
 
-                    if (highLightWindow == meshes[index].name) {
+				for (let index = 0; index < meshes.length; index++) {
 
-                        if (THAT.tileData[selected_balkony]) {
-                            var myMaterial = new BABYLON.StandardMaterial("myMaterial", scene)
-                            myMaterial.emissiveColor = new BABYLON.Color3(0.00, 0.18, 0.00)
-                            myMaterial.environmentIntensity = 0.1
-                            myMaterial.alpha = 0.8
+					if (highLightWindow == meshes[index].name) {
 
-                            THAT.tileData[selected_balkony].RENDERATOR.dataEntry.orientation = "north"
-                            if (THAT.tileData[selected_balkony].RENDERATOR.dataEntry.availability == "false") {
-                                myMaterial.diffuseColor = new BABYLON.Color3(1, 51 / 255, 15 / 255)
-                                myMaterial.specularColor = new BABYLON.Color3(1, 51 / 255, 45 / 255)
-                                myMaterial.emissiveColor = new BABYLON.Color3(1, 51 / 255, 45 / 255)
-                            } else if (THAT.tileData[selected_balkony].RENDERATOR.dataEntry.areaType == "commercial") {
-                                myMaterial.diffuseColor = new BABYLON.Color3(1, 91 / 255, 55 / 255)
-                                myMaterial.specularColor = new BABYLON.Color3(1, 91 / 255, 95 / 255)
-                                myMaterial.emissiveColor = new BABYLON.Color3(1, 91 / 255, 95 / 255)
-                            } else if (THAT.tileData[selected_balkony].RENDERATOR.dataEntry.areaType == "common") {
-                                myMaterial.diffuseColor = new BABYLON.Color3(51 / 255, 51 / 255, 1)
-                                myMaterial.specularColor = new BABYLON.Color3(51 / 255, 51 / 255, 1)
-                                myMaterial.emissiveColor = new BABYLON.Color3(51 / 255, 51 / 255, 1)
+						if (THAT.tileData[selected_balkony]) {
+							var myMaterial = new BABYLON.StandardMaterial("myMaterial", scene)
+							myMaterial.emissiveColor = new BABYLON.Color3(0.00, 0.18, 0.00)
+							myMaterial.environmentIntensity = 0.1
+							myMaterial.alpha = 0.8
+
+							THAT.tileData[selected_balkony].RENDERATOR.dataEntry.orientation = "north"
+							if (THAT.tileData[selected_balkony].RENDERATOR.dataEntry.availability == "false") {
+								myMaterial.diffuseColor = new BABYLON.Color3(1, 51 / 255, 15 / 255)
+								myMaterial.specularColor = new BABYLON.Color3(1, 51 / 255, 45 / 255)
+								myMaterial.emissiveColor = new BABYLON.Color3(1, 51 / 255, 45 / 255)
+							} else if (THAT.tileData[selected_balkony].RENDERATOR.dataEntry.areaType == "commercial") {
+								myMaterial.diffuseColor = new BABYLON.Color3(1, 91 / 255, 55 / 255)
+								myMaterial.specularColor = new BABYLON.Color3(1, 91 / 255, 95 / 255)
+								myMaterial.emissiveColor = new BABYLON.Color3(1, 91 / 255, 95 / 255)
+							} else if (THAT.tileData[selected_balkony].RENDERATOR.dataEntry.areaType == "common") {
+								myMaterial.diffuseColor = new BABYLON.Color3(51 / 255, 51 / 255, 1)
+								myMaterial.specularColor = new BABYLON.Color3(51 / 255, 51 / 255, 1)
+								myMaterial.emissiveColor = new BABYLON.Color3(51 / 255, 51 / 255, 1)
 							}
-							
+
 							myMaterial.ambientColor = new BABYLON.Color3(0.23, 0.98, 0.53)
 							meshes[index].visibility = 1
 							meshes[index].material = myMaterial
 							selectedEntryIndex = index;
 
 							break;
-                        }
+						}
 
-                        
-                    }
-                }
 
-                clearPreviousHoveredSelection();
+					}
+				}
 
-                THAT.previousHoveredEntryIndex = selectedEntryIndex;
-                THAT.previousHoveredEntry = selected_balkony;
+				clearPreviousHoveredSelection();
 
-                if (startingPoint) {
-                    startingPoint = null
-                    return
-                }
-            }
+				THAT.previousHoveredEntryIndex = selectedEntryIndex;
+				THAT.previousHoveredEntry = selected_balkony;
+
+				if (startingPoint) {
+					startingPoint = null
+					return
+				}
+			}
 
 			let eventCanvas = engine.getRenderingCanvas()
 			eventCanvas.addEventListener("pointerdown", onPointerDown, false)
@@ -1962,11 +1962,11 @@ class FrontEnd {
 			eventCanvas.addEventListener("pointerup", onPointerUp, false)
 			eventCanvas.addEventListener("mousemove", onMouseMove, false)
 
-			scene.onDispose = function() {
+			scene.onDispose = function () {
 				eventCanvas.removeEventListener("pointerdown", onPointerDown)
 				eventCanvas.removeEventListener("pointermove", onPointerMove)
 				eventCanvas.removeEventListener("pointerup", onPointerUp)
-                eventCanvas.removeEventListener("mousemove", onMouseMove)
+				eventCanvas.removeEventListener("mousemove", onMouseMove)
 			}
 			return scene
 		}
@@ -1974,7 +1974,7 @@ class FrontEnd {
 		let engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true })
 		let scene = delayCreateScene(engine)
 
-		engine.runRenderLoop(function() {
+		engine.runRenderLoop(function () {
 			if (scene) {
 				scene.render()
 			}
@@ -1986,7 +1986,7 @@ class FrontEnd {
 		let canvasThr = 0
 		let canvasHThr = 0
 
-		setInterval(function() {
+		setInterval(function () {
 			let canvasWidth = $("#renderator-canvas-north-mine").outerWidth()
 			let canvasHeight = $("#renderator-canvas-north-mine").outerHeight()
 			if (Math.abs(canvasThr - canvasWidth) > 10 || Math.abs(canvasHeight - canvasHThr) > 10) {
@@ -2030,12 +2030,12 @@ class FrontEnd {
 			SPINNER.removeClass("d-none")
 
 			this.rentcafeGetApartmentData(token, propertyId, shapeObj.renderatorDataEntry.crm.params.ApartmentName, {
-				onSuccess: function(rentcafeProps) {
+				onSuccess: function (rentcafeProps) {
 					THAT.matchRentcafeProps(shapeObj.renderatorDataEntry, rentcafeProps)
 
 					if (rentcafeProps.FloorplanId) {
 						THAT.rentcafeGetAppartmentFloorplan(token, propertyId, rentcafeProps.FloorplanId, {
-							onSuccess: function(floorplanImageURL) {
+							onSuccess: function (floorplanImageURL) {
 								if (floorplanImageURL) {
 									if (shapeObj.renderatorDataEntry.floorPlan.files.length === 0) {
 										shapeObj.renderatorDataEntry.floorPlan.url = encodeURI(floorplanImageURL)
@@ -2048,7 +2048,7 @@ class FrontEnd {
 									cb()
 								}
 							},
-							onError: function() {
+							onError: function () {
 								SPINNER.addClass("d-none")
 							}
 						})
@@ -2059,7 +2059,7 @@ class FrontEnd {
 						}
 					}
 				},
-				onError: function() {
+				onError: function () {
 					SPINNER.addClass("d-none")
 					$("#crm-fail-load-area").modal("show")
 				}
@@ -2096,7 +2096,7 @@ class FrontEnd {
 				type: "GET",
 				url: apiURL,
 				dataType: "json",
-				success: function(data) {
+				success: function (data) {
 					if (data.length === 1 && data[0].Error) {
 						/*disable front end*/
 						if (cb && cb.onError) {
@@ -2108,7 +2108,7 @@ class FrontEnd {
 						cb.onSuccess(data)
 					}
 				},
-				error: function(er) {
+				error: function (er) {
 					if (cb && cb.onError) {
 						cb.onError()
 					}
@@ -2155,7 +2155,7 @@ class FrontEnd {
 		let elevationKlassInst = this.elevationKlasses[elevationName]
 		let elevationFilterKlassInst = this.elevationFilterKlasses[elevationName]
 		this.crmGetAllData("rentcafe", {
-			onSuccess: function(APIobjects) {
+			onSuccess: function (APIobjects) {
 				let canvasObjects = elevationKlassInst.canvas._objects
 				//crm data
 
@@ -2165,7 +2165,7 @@ class FrontEnd {
 					onUpdated()
 				}
 			},
-			onError: function() {
+			onError: function () {
 				$("#crm-fail-load-allareas").modal("show")
 			}
 		})
@@ -2186,7 +2186,7 @@ class FrontEnd {
 				type: "GET",
 				url: apiURL,
 				dataType: "json",
-				success: function(data) {
+				success: function (data) {
 					if (data.length === 1 && data[0].Error) {
 						/*disable front end*/
 						if (cb && cb.onError) {
@@ -2232,7 +2232,7 @@ class FrontEnd {
 						cb.onSuccess(data)
 					}
 				},
-				error: function(er) {
+				error: function (er) {
 					if (cb && cb.onError) {
 						cb.onError()
 					}
@@ -2252,7 +2252,7 @@ class FrontEnd {
 		if (rentcafeProps.FloorplanName) {
 			if (
 				this.Model.adminOptions.layout
-					.map(function(e) {
+					.map(function (e) {
 						return e.name
 					})
 					.indexOf(rentcafeProps.FloorplanName) === -1
@@ -2302,7 +2302,7 @@ class FrontEnd {
 			type: "GET",
 			url: apiURL,
 			dataType: "json",
-			success: function(data) {
+			success: function (data) {
 				if (data.length === 1 && data[0].Error) {
 					if (cb && cb.onError) {
 						cb.onError(data[0])
@@ -2313,7 +2313,7 @@ class FrontEnd {
 					cb.onSuccess(data[0])
 				}
 			},
-			error: function(er) {
+			error: function (er) {
 				if (cb && cb.onError) {
 					cb.onError()
 				}
@@ -2324,7 +2324,7 @@ class FrontEnd {
 		let apiURL = "https://api.rentcafe.com/rentcafeapi.aspx?requestType=floorplan"
 		apiURL += "&apiToken=" + compToken
 		apiURL += "&propertyId=" + propId
-		let getPlanById = function(floorplanList) {
+		let getPlanById = function (floorplanList) {
 			for (let p = 0; p < floorplanList.length; p++) {
 				if (floorplanList[p].FloorplanId === apartmentFloorplanId) {
 					return floorplanList[p].FloorplanImageURL
@@ -2336,7 +2336,7 @@ class FrontEnd {
 			type: "GET",
 			url: apiURL,
 			dataType: "json",
-			success: function(data) {
+			success: function (data) {
 				if (data.length === 1 && data[0].Error) {
 					if (cb && cb.onError) {
 						cb.onError(data[0])
@@ -2348,7 +2348,7 @@ class FrontEnd {
 					cb.onSuccess(img)
 				}
 			},
-			error: function(er) {
+			error: function (er) {
 				if (cb && cb.onError) {
 					cb.onError()
 				}
@@ -2462,25 +2462,25 @@ class ElevationKlass {
 			isMouseInUse: false,
 			isTouchInUse: false,
 			lastCheckTM: null,
-			isTouch: function() {
+			isTouch: function () {
 				if (this.isTouchInUse && !this.isMouseInUse) {
 					return true
 				}
 				return false
 			},
-			isMouse: function() {
+			isMouse: function () {
 				if (!this.isTouchInUse && this.isMouseInUse) {
 					return true
 				}
 				return false
 			},
-			chooseDevice: function(prop) {
+			chooseDevice: function (prop) {
 				if (!this.isMouseInUse && !this.isTouchInUse) {
 					this[prop] = true
 				}
 			},
-			resetCheck: function() {
-				;(this.isMouseInUse = false), (this.isTouchInUse = false)
+			resetCheck: function () {
+				; (this.isMouseInUse = false), (this.isTouchInUse = false)
 			}
 		}
 		this.transforms = this.defaults.transforms
@@ -2529,11 +2529,11 @@ class ElevationKlass {
 	/* this 5 events are set from FRONT_END Klass
 	 *  They are usefull for the things out of the canvas like dialogs, rendergalleries etc
 	 */
-	onMouseOverArea() {}
-	onMouseNoArea() {}
-	onClickOverArea() {}
-	onClearSelection() {}
-	onClickSomewhere() {}
+	onMouseOverArea() { }
+	onMouseNoArea() { }
+	onClickOverArea() { }
+	onClearSelection() { }
+	onClickSomewhere() { }
 
 	_getUnfilteredStyleBasedOnAreaType(fabricObj) {
 		let THAT = this
@@ -2559,14 +2559,14 @@ class ElevationKlass {
 	}
 	updateAllAreasEvents(events) {
 		let THAT = this
-		this.parseCanvasAreas(function(fabricObj) {
+		this.parseCanvasAreas(function (fabricObj) {
 			THAT.updateAreaEvents(fabricObj, events)
 		})
 		this.canvasRender(this.canvas)
 	}
 	updateAllAreasDefaultStyle() {
 		let THAT = this
-		this.parseCanvasAreas(function(fabricObj) {
+		this.parseCanvasAreas(function (fabricObj) {
 			fabricObj.rend_applyDefaultStyle(fabricObj)
 		})
 		this.canvasRender(this.canvas)
@@ -2575,7 +2575,7 @@ class ElevationKlass {
 		let THAT = this
 		fabricObj.rend_applyDefaultStyle =
 			events.rend_applyDefaultStyle ||
-			function(fabricObj) {
+			function (fabricObj) {
 				if (fabricObj.lastSearch) {
 					if (!fabricObj.lastSearch.filtered) {
 						fabricObj.set(THAT._getUnfilteredStyleBasedOnAreaType(fabricObj))
@@ -2592,7 +2592,7 @@ class ElevationKlass {
 			}
 		fabricObj.rend_onMouseOutArea =
 			events.rend_onMouseOutArea ||
-			function(fabricObj) {
+			function (fabricObj) {
 				// if (fabricObj.canvas.getActiveObject()===fabricObj) {
 				if (fabricObj.rend_SELECTED) {
 					return
@@ -2615,7 +2615,7 @@ class ElevationKlass {
 			}
 		fabricObj.rend_onMouseOverArea =
 			events.rend_onMouseOverArea ||
-			function(fabricObj) {
+			function (fabricObj) {
 				// if (fabricObj.canvas.getActiveObject() === fabricObj) {
 				if (fabricObj.rend_SELECTED) {
 					return
@@ -2634,14 +2634,14 @@ class ElevationKlass {
 			}
 		fabricObj.rend_onClickOverArea =
 			events.rend_onClickOverArea ||
-			function(fabricObj) {
+			function (fabricObj) {
 				/* always visible no matter the filter */
 				fabricObj.set(THAT._getFilteredStyleBasedOnAreaType(fabricObj))
 			}
 		/*called to deactivate object in canvas */
 		fabricObj.rend_onDeselectArea =
 			events.rend_onDeselectArea ||
-			function(fabricObj) {
+			function (fabricObj) {
 				/* always invisible no matter the active filters */
 				fabricObj.set(THAT._getUnfilteredStyleBasedOnAreaType(fabricObj))
 				fabricObj.rend_onMouseOutArea(fabricObj)
@@ -2780,7 +2780,7 @@ class ElevationKlass {
 	}
 
 	lockCanvasAreas(canvas) {
-		this.parseCanvasAreas(function(fabricObj) {
+		this.parseCanvasAreas(function (fabricObj) {
 			fabricObj.set({
 				lockMovementX: true,
 				lockMovementY: true,
@@ -2797,7 +2797,7 @@ class ElevationKlass {
 	}
 	deactivateAllCanvasObjects(canvas) {
 		let THAT = this
-		this.parseCanvasAreas(function(fabricObj) {
+		this.parseCanvasAreas(function (fabricObj) {
 			fabricObj.rend_SELECTED = false
 			if (fabricObj.rend_onDeselectArea) {
 				fabricObj.rend_onDeselectArea(fabricObj)
@@ -3018,7 +3018,7 @@ class ElevationKlass {
 			bottom: 300
 		}
 
-		$(canvas.wrapperEl).on("mouseout", function(ev) {
+		$(canvas.wrapperEl).on("mouseout", function (ev) {
 			THAT.deviceController.chooseDevice("isMouseInUse")
 			if (THAT.deviceController.isMouse() === false) {
 				return
@@ -3027,7 +3027,7 @@ class ElevationKlass {
 			THAT.unhighlightAllAreasOffPointer(canvas)
 		})
 
-		canvas.on("mouse:move", function(ev) {
+		canvas.on("mouse:move", function (ev) {
 			if (THAT.canvasIsPanning) {
 				return
 			}
@@ -3041,7 +3041,7 @@ class ElevationKlass {
 			THAT.highlightAreaOnPointer(canvas, pointer)
 		})
 
-		canvas.on("mouse:wheel", function(opt) {
+		canvas.on("mouse:wheel", function (opt) {
 			var delta = opt.e.deltaY
 			var zoom = canvas.getZoom()
 			zoom = zoom + delta / 3000
@@ -3063,21 +3063,21 @@ class ElevationKlass {
 
 		THAT.MOUSE_IS_UP = false
 		THAT.MOUSE_IS_DOWN = false
-		canvas.on("mouse:down", function(e) {
+		canvas.on("mouse:down", function (e) {
 			THAT.MOUSE_IS_UP = false
 			THAT.MOUSE_IS_DOWN = true
 		})
-		canvas.on("mouse:up", function(e) {
+		canvas.on("mouse:up", function (e) {
 			THAT.MOUSE_IS_UP = true
 			THAT.MOUSE_IS_DOWN = false
 		})
 
-		canvas.on("selection:cleared", function(e) {
+		canvas.on("selection:cleared", function (e) {
 			setTimeout(() => {
 				window.deselectRoom = true
 			}, 100)
 
-			setTimeout(function() {
+			setTimeout(function () {
 				if (THAT.MOUSE_IS_DOWN && !THAT.MOUSE_IS_UP) {
 					return
 				}
@@ -3109,7 +3109,7 @@ class ElevationKlass {
 		hammertime.get("pinch").set({ enable: true })
 
 		let p0
-		hammertime.on("pinch", function(ev) {
+		hammertime.on("pinch", function (ev) {
 			let delta = ev.scale
 			let zoom = p0 * delta
 
@@ -3124,10 +3124,10 @@ class ElevationKlass {
 			// THAT.setElevationCanvasZoom(canvas, p0, ModelElevation, pointer);
 			// }
 		})
-		hammertime.on("pinchstart", function(ev) {
+		hammertime.on("pinchstart", function (ev) {
 			p0 = canvas.getZoom()
 		})
-		hammertime.on("pinchend", function(ev) {
+		hammertime.on("pinchend", function (ev) {
 			p0 = canvas.getZoom()
 		})
 
@@ -3142,9 +3142,9 @@ class ElevationKlass {
 			},
 			delta: { x: 0, y: 0 }
 		}
-		hammertime.on("pan", function(ev) {
+		hammertime.on("pan", function (ev) {
 			THAT.canvasIsPanning = true
-			let panMove = function(event) {
+			let panMove = function (event) {
 				let x = event.deltaX
 				let y = event.deltaY
 				let delta = new fabric.Point(x - x0, y - y0)
@@ -3198,16 +3198,16 @@ class ElevationKlass {
 			}
 			panMove(ev)
 		})
-		hammertime.on("panstart", function(ev) {
+		hammertime.on("panstart", function (ev) {
 			THAT.canvasIsPanning = true
 			x0 = ev.deltaX
 			y0 = ev.deltaY
 		})
-		hammertime.on("panend", function(ev) {
+		hammertime.on("panend", function (ev) {
 			THAT.canvasIsPanning = false
 		})
 
-		hammertime.on("tap doubletap", function(ev) {
+		hammertime.on("tap doubletap", function (ev) {
 			let pointer = canvas.getPointer(ev.srcEvent)
 			THAT.selectAreaOnPointer(canvas, pointer)
 		})
