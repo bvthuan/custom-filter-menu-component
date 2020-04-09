@@ -63,7 +63,7 @@
 	<script src="js/front-end/vue-components/appartment-component-3d.js"></script>
 	<script src="js/front-end/vue-components/splash_amenities-component.js"></script>
 	<script src="js/front-end/vue-components/splash_enquire-modal-component-3d.js"></script>
-	<script src="js/front-end/vue-components/splash_evelation-vertical-filters-component.js"></script>
+	<script src="js/front-end/vue-components/splash_evelation-new-vertical-filters-component.js"></script>
 
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
