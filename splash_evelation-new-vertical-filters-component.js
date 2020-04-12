@@ -1402,7 +1402,7 @@ Vue.component('filter-menu-component', {
 			v-bind:class="{'centerized-child':!filterklass.appartmentHasFilters() }">
 
 			<!--Layout -->
-			<div class="filter filter-layouts-section" v-if="filters.layouts && filters.layouts.visible &&  filterActivated('layout')"
+			<div class="filter filter-layouts-section" v-if="filters.layouts && filters.layouts.visible &&  filterActivated('layouts')"
 				v-bind:class="{'dropdown-open': isFilterDropdownOpen('layouts') }">
 				<div class="filter-header" v-on:click="toggleFilterDropdown('layouts')">
 					<div class="h4">Layout</div>
