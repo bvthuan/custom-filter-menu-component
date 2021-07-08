@@ -668,7 +668,6 @@ Vue.component("filter-elevation-header", {
 			this.filterklass.deactivateFilter(filterObj)
 
 			if (!this.activefilters.length) {
-				console.log("activated actives: ", this.activefilters.length)
 				this.filterklass.clearAllFilters()
 			}
 		},
